@@ -54,8 +54,8 @@ Fix the SeedService:
     - [x] Query the storage for list of seeds
     - [ ] Create seed detail view
     - [ ] Query the storage for seed details
-- [ ] Refactor services to properly implement the layer model (add service interfaces)
 - [ ] Initialize routes inside handler initialization (refactor handlers and routes a bit)
+- [ ] Refactor services to properly implement the layer model (add service interfaces)
 - [ ] Think of a way to do proper configuration
 
 
