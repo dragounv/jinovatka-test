@@ -1,0 +1,62 @@
+package components
+
+templ wrapMain(main templ.Component) {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webarchiv - Jinovatka</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    @header()
+  </header>
+  <main>
+    @main
+  </main>
+  <footer>
+    @footer()
+  </footer>
+</body>
+</html>
+}
+
+templ header() {
+    <div class="flex-row header">
+  <!-- webarchiv logo -->
+  <!-- <a class="reversed-link logo" href="https://www.webarchiv.cz">
+    <h4>Webarchiv</h4>
+  </a> -->
+  <div>
+    <a href="/">index</a>
+    <!-- <a href="/result/">výsledek</a> -->
+    <a href="/about/">about</a>
+    <a href="/admin/">admin</a>
+  </div>
+  <!-- NK logo -->
+  <a class="logo-nk" href="https://www.nkp.cz">
+    <img src="/static/logo_NK.svg" alt="Národní knihovna">
+  </a>
+</div>
+}
+
+templ footer() {
+  <hr>
+<div class="flex-row footer">
+  <div>
+    <p>
+      <a href="https://www.webarchiv.cz">Webarchiv</a> je součástí<br>
+      <a href="https://www.nkp.cz">Národní knihovny ČR</a>
+    </p>
+  </div>
+  <div>
+    <p>
+      Credits placeholder <br>
+      so many amazing people worked on this <br>
+      oh, and did you knkow it was made for some project or something
+    </p>
+  </div>
+</div>
+}

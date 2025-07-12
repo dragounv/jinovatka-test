@@ -1,0 +1,278 @@
+/* variables */
+:root {
+    --clr-webarchiv-blue: #00f;
+    --clr-text-main: var(--clr-black);
+    --clr-background-main: var(--clr-white);
+    --clr-background-secondary: #f5f5f5;
+    --clr-focus: var(--clr-black);
+    --clr-error: hsl(0 90 50);
+    --clr-black: #000;
+    --clr-gray: hsl(0 0 50);
+    --clr-white: #fff;
+
+    --font-serif: "Times New Roman", serif;
+    --font-sans: "Roboto", sans-serif;
+
+    --font-size: 1.25rem;
+
+    --paragraph-width: 1000px;
+}
+
+/* global */
+*,
+::after,
+::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    color: var(--clr-text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    margin: auto;
+    font-size: var(--font-size);
+    font-weight: 400;
+    padding: 0 0.5rem;
+    background-color: var(--clr-background-main);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+ol {
+    margin-bottom: 16px;
+}
+hr,
+section,
+article {
+    margin-bottom: 3rem;
+}
+main > section:last-of-type,
+main > article:last-of-type {
+    margin-bottom: 0;
+}
+
+p {
+    line-height: 24px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: var(--font-serif);
+    color: var(--clr-webarchiv-blue);
+    font-weight: 500;
+}
+h1 {
+    font-size: 3.75rem;
+    color: var(--clr-text-main);
+}
+h2 {
+    font-size: 2rem;
+    font-style: italic;
+}
+h3 {
+    font-size: 2rem;
+    font-style: italic;
+}
+h4 {
+    font-size: 2rem;
+}
+
+ul {
+    list-style-type: none;
+}
+li {
+    padding-left: 2rem;
+}
+
+hr {
+    height: 3px;
+    background-color: var(--clr-black);
+    border: 0;
+}
+
+a {
+    color: var(--clr-webarchiv-blue);
+    text-decoration: underline;
+    text-decoration-color: var(--clr-webarchiv-blue);
+}
+a:hover {
+    text-decoration: none;
+    color: var(--clr-webarchiv-blue);
+}
+a:visited {
+    color: var(--clr-webarchiv-blue);
+}
+/* This makes underline on the h1 links more consistent across browsers */
+h1 a {
+    text-decoration-thickness: 3px;
+}
+
+button,
+input,
+textarea {
+    font-family: inherit;
+    font-size: 100%;
+    padding: 4px 8px;
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 3px solid var(--clr-webarchiv-blue);
+    background-color: var(--clr-background-secondary);
+    font-size: 1.45rem;
+    /* margin: 4px 0; */
+    margin-bottom: 16px;
+}
+textarea {
+    min-height: 5rem;
+    resize: vertical;
+}
+input:focus,
+textarea:focus {
+    outline: 3px solid var(--clr-webarchiv-blue);
+}
+
+button {
+    background-color: var(--clr-webarchiv-blue);
+    border: 3px solid var(--clr-webarchiv-blue);
+    color: var(--clr-white);
+}
+button:hover {
+    background-color: var(--clr-white);
+    color: var(--clr-webarchiv-blue);
+}
+
+table {
+    border-collapse: collapse;
+    border: none;
+    background-color: var(--clr-background-main);
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    text-align: center;
+    min-width: var(--paragraph-width);
+}
+thead {
+    border-bottom: 2px solid var(--clr-black);
+    /* border-top: 2px solid var(--clr-black); */
+}
+td {
+    padding: 1rem;
+}
+th {
+    padding: 1rem 0.5rem 0.5rem;
+    font-weight: 400;
+    font-size: 1.25rem;
+}
+tbody > tr:nth-of-type(odd) {
+    background-color: var(--clr-background-secondary);
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.flex-row input {
+    margin-bottom: 0;
+}
+.flex-row label {
+    margin-right: 8px;
+}
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flex-content-column {
+    display: flex;
+    flex-direction: column;
+    width: var(--paragraph-width);
+}
+
+.long-button {
+    width: 100%;
+}
+
+/* pagination */
+.pagination {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 8px 0;
+}
+.pagination-link {
+    font-size: 2rem;
+    padding: 4px 12px;
+    /* margin-top: 3px;
+    margin-bottom: 4px; */
+    margin: 3px 4px 0
+}
+.pagination-active {
+    padding: 4px 9px;
+    border: 3px solid var(--clr-webarchiv-blue);
+    margin-top: 0;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+/* Hide element */
+.hidden {
+    display: none;
+}
+
+/* header */
+.header {
+    margin: 1rem 0;
+    width: var(--paragraph-width);
+}
+
+/* main */
+/* main - index */
+.error-output {
+    color: var(--clr-error);
+    text-decoration: underline;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* main - result */
+.status-code {
+    color: var(--clr-gray);
+    margin-left: 8px;
+}
+
+/* footer */
+.footer {
+    margin: 16px 0;
+    align-items: start;
+    width: var(--paragraph-width);
+}
+

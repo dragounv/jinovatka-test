@@ -1,0 +1,65 @@
+package main
+
+import (
+	"context"
+	"jinovatka/server"
+	"jinovatka/services"
+	"jinovatka/storage"
+	gormStorage "jinovatka/storage/gorm"
+	"jinovatka/utils"
+	"log/slog"
+	"os"
+	"os/signal"
+	"runtime"
+	"syscall"
+	"time"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+)
+
+func main() {
+	log := slog.New(slog.Default().Handler())
+
+	// Prepare db conection.
+	db, err := gorm.Open(sqlite.Open("storage.db"), &gorm.Config{})
+	if err != nil {
+		log.Error("could not open database connection", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
+	// Catch SIGINT and SIGHUP. Prepare gentle shutdown.
+	signals := []os.Signal{os.Interrupt}
+	if runtime.GOOS == "linux" {
+		signals = append(signals, syscall.SIGHUP)
+	}
+	stopSignal, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	utils.ShutdownFunc = stop // Setup function, that can be used in cases, where shutdown of the server is necessary.
+
+	seedRepository := gormStorage.NewSeedRepository(log, db)
+	repository := storage.NewRepository(seedRepository)
+
+	const addr = "localhost:8080"
+	server := server.NewServer(
+		stopSignal,
+		log,
+		addr,
+		services.NewServices(log, repository),
+	)
+
+	// Start the server in new goroutine
+	go server.ListenAndServe()
+	log.Info("Server is listening at http://" + addr)
+
+	// Wait for interupt
+	<-stopSignal.Done()
+	// Wait for shutdown (or timeout and go eat dirt)
+	shutdownTimeout, stop := context.WithTimeout(context.Background(), 120*time.Second)
+	defer stop()
+	err = server.Shutdown(shutdownTimeout)
+	if err != nil {
+		log.Error("shutdown timeout run out", slog.String("error", err.Error()))
+	}
+	log.Info("Server shutdown")
+}

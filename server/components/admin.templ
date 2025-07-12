@@ -1,0 +1,73 @@
+package components
+
+import "strconv"
+
+templ adminView(data *AdminViewData) {
+    <div class="flex-content-column">
+    <h1>Administrativní rozhraní</h1>
+    <section>
+        <h2>Vyhledávání</h2>
+        <form method="get" id="search-form">
+        <div class="flex-row">
+            <label for="url">URL: </label>
+            <input type="text" id="url" name="url">
+        </div>
+        <div class="flex-row">
+            <label for="from">Od: </label>
+            <input type="date" id="from" name="from">
+        </div>
+        <div class="flex-row">
+            <label for="to">Do: </label>
+            <input type="date" id="to" name="to">
+        </div>
+        <button class="long-button" type="submit">Vyhledat</button>
+        </form>
+    </section>
+    </div>
+    <div>
+        <section>
+        if data.Pagination.NoPages > 1 {
+            @pagination(data.Pagination.NoPages)
+        }
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>URL Adresa</th>
+            <th>Datum sklizně</th>
+            <th>Archivní URL</th>
+            <th>Veřejná Sklizeň</th>
+            <th>Stav</th>
+          </tr>
+        </thead>
+//         <tbody>
+//           {{$pt := .Global.prettyDateTime -}}
+//           {{$ht := .Global.humanDateTime -}}
+//           {{range .Data.Seeds -}}
+//           <tr>
+//             <td><a href="/admin/seeds/{{.ID}}">{{.ID}}</a></td>
+//             <td><a href="{{.Url}}">{{.Url}}</a></td>
+//             <td>{{if .HarvestedAt.Valid}}{{.HarvestedAt.Time.Format $ht}}{{else}}-{{end}}</td>
+//             <td>{{if .ArchivalUrl.Valid}}<a href="{{.ArchivalUrl.String}}">{{.ArchivalUrl.String}}</a>{{else}}Tady bude dlouhá adresa ukaž jak se to zobrazí bla bla bla{{end}}</td>
+//             <td>-</td>
+//             <td>-</td>
+//           </tr>
+//           {{- end}}
+//         </tbody>
+      </table>
+            if data.Pagination.NoPages > 1 {
+                @pagination(data.Pagination.NoPages)
+            }
+        </section>
+    </div>
+}
+
+templ pagination(noPages int) {
+    <nav aria-label="pagination" class="pagination">
+        for i := range noPages {
+            {{page := strconv.Itoa(i + 1)}}
+            <a class="pagination-link" href={templ.URL("?page=" + page)}>{page}</a>
+        }
+    </nav>
+}

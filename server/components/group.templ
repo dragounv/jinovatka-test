@@ -1,0 +1,25 @@
+package components
+
+templ groupView(data *GroupViewData) {
+    <div class="flex-content-column">
+    <h1>Skupina {data.Group.ShadowID}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Shadow</th>
+                <th>URL Adresa</th>
+                <th>Stav</th>
+            </tr>
+        </thead>
+        <tbody>
+        for _, seed := range data.Group.Seeds {
+            <tr>
+                <td>{seed.ShadowID}</td>
+                <td>{seed.URL}</td>
+                <td>{seed.State}</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}
