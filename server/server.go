@@ -3,6 +3,10 @@ package server
 import (
 	"context"
 	"jinovatka/server/handlers"
+	"jinovatka/server/handlers/admin"
+	"jinovatka/server/handlers/group"
+	"jinovatka/server/handlers/index"
+	"jinovatka/server/handlers/static"
 	"jinovatka/services"
 	"log/slog"
 	"net"
@@ -11,18 +15,17 @@ import (
 )
 
 func NewServer(ctx context.Context, log *slog.Logger, addr string, services *services.Services) *http.Server {
-	// routerArgs := &RouterArgs{
-	// 	Log:      log,
-	// 	Services: services.NewServices(log),
-	// }
-	// router := NewRouter(routerArgs)
+	// Create router
+	mux := http.NewServeMux()
+	router := handlers.NewRouterHandler(mux)
 
-	router := http.NewServeMux()
-	handlers.Routes(router, handlers.NewRoutesArgs(
-		log,
-		services,
-		staticFiles,
-	))
+	// Add all handlers to the router
+	router.AddHandlers(
+		index.NewIndexHandler(log, services.SeedService),
+		static.NewStaticHandler(log, staticFiles /* from embed.go */),
+		group.NewGroupHandler(log, services.SeedService),
+		admin.NewAdminHandler(log),
+	)
 
 	server := &http.Server{
 		Addr:         addr,

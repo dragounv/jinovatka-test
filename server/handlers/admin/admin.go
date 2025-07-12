@@ -33,3 +33,7 @@ func (handler *AdminHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (handler *AdminHandler) View(w http.ResponseWriter, r *http.Request, data *components.AdminViewData) error {
 	return components.AdminView(data).Render(r.Context(), w)
 }
+
+func (handler *AdminHandler) Routes(mux *http.ServeMux) {
+	mux.Handle("/admin/", handler)
+}

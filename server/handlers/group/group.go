@@ -9,6 +9,7 @@ import (
 	"net/http"
 )
 
+// Hanlder for seed groups. Used to create/show list of seeds to make tracking of progress of individual seeds easier.
 type GroupHandler struct {
 	Log         *slog.Logger
 	SeedService *services.SeedService
@@ -42,4 +43,8 @@ func (handler *GroupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (handler *GroupHandler) View(w http.ResponseWriter, r *http.Request, data *components.GroupViewData) error {
 	return components.GroupView(data).Render(r.Context(), w)
+}
+
+func (handler *GroupHandler) Routes(mux *http.ServeMux) {
+	mux.Handle("GET /seeds/{id}", handler)
 }
