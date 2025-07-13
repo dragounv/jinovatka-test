@@ -43,10 +43,6 @@ Main admin page.
 
 TODO:
 
-Fix the SeedService:
-
-- [x] Handle multiple URLS
-- [x] Check URL validity, set limits on uploaded number of URLs
 - [ ] Redirect to page showning progress of the URLs
     - [x] Create new model for Seeds Group
     - [x] Save the Group to storage
@@ -54,16 +50,7 @@ Fix the SeedService:
     - [x] Query the storage for list of seeds
     - [ ] Create seed detail view
     - [ ] Query the storage for seed details
-- [ ] Initialize routes inside handler initialization (refactor handlers and routes a bit)
 - [ ] Refactor services to properly implement the layer model (add service interfaces)
 - [ ] Think of a way to do proper configuration
-
-
-- router
-    - just mux, pass it to high level handlers together with other dependencies
-- hanlder
-    - NewHanlder creates handler and subhandlers and initializes routes
-    - subhandlers (save, edit, create, list...)
-    - .Routes - takes slice of subhandlers and mux, then assings paths to subhandlers
 
 - Možnost nechat uživatele pojmenovat skupinu?
