@@ -1,0 +1,59 @@
+package components
+
+import (
+	"jinovatka/entities"
+)
+
+type SeedViewData struct {
+	Seed *entities.Seed
+}
+
+func NewSeedViewData(seed *entities.Seed) *SeedViewData {
+	return &SeedViewData{
+		Seed: seed,
+	}
+}
+
+templ seedView(data *SeedViewData) {
+<div class="flex-content-column">
+	<h1>{data.Seed.URL}</h1>
+	<table>
+		<tbody>
+			<tr>
+				<td>URL Adresa:</td>
+				<td>{data.Seed.URL}</td>
+			</tr>
+			<tr>
+				<td>Veřejné semínko:</td>
+				if data.Seed.Public {
+					<td>Ano</td>
+				} else {
+					<td>Ne</td>
+				}
+			</tr>
+			<tr>
+				<td>Stav:</td>
+				if data.Seed.State == entities.HarvestedSucessfully {
+					<td>Sklizeno</td>
+				} else {
+					<td>Nesklizeno</td>
+				}
+				// TODO: Add other messages for cases where there was error during crawl.
+			</tr>
+			if data.Seed.State == entities.HarvestedSucessfully {
+				<tr>
+					<td>Archivní odkaz:</td>
+					<td>{data.Seed.ArchivalURL}</td>
+					// TODO: This should be link. There should also be a copy button.
+				</tr>
+				<tr>
+					<td>Datum sklizně:</td>
+					<td>{data.Seed.HarvestedAt.String()}</td>
+					// TODO: Use custom format sring for the time.Time.
+				</tr>
+			}
+			// TODO: Maybe add shadowID or the shadow link to this page.
+		</tbody>
+	</table>
+</div>
+}
