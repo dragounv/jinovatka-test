@@ -24,26 +24,19 @@ templ wrapMain(main templ.Component) {
 }
 
 templ header() {
-    <div class="flex-row header">
+<div class="flex-row header">
   <!-- webarchiv logo -->
   <!-- <a class="reversed-link logo" href="https://www.webarchiv.cz">
     <h4>Webarchiv</h4>
   </a> -->
-  <div>
-    <a href="/">index</a>
-    <!-- <a href="/result/">výsledek</a> -->
-    <a href="/about/">about</a>
-    <a href="/admin/">admin</a>
-  </div>
-  <!-- NK logo -->
-  <a class="logo-nk" href="https://www.nkp.cz">
-    <img src="/static/logo_NK.svg" alt="Národní knihovna">
-  </a>
+  <a href="/">index</a>
+  <a href="/about/">about</a>
+  <a href="/admin/">admin</a>
 </div>
 }
 
 templ footer() {
-  <hr>
+<hr>
 <div class="flex-row footer">
   <div>
     <p>
@@ -51,12 +44,16 @@ templ footer() {
       <a href="https://www.nkp.cz">Národní knihovny ČR</a>
     </p>
   </div>
-  <div>
+  /* <div>
     <p>
       Credits placeholder <br>
       so many amazing people worked on this <br>
       oh, and did you knkow it was made for some project or something
     </p>
-  </div>
+  </div> */
+  <!-- NK logo -->
+  <a class="logo-nk" href="https://www.nkp.cz">
+    <img src="/static/logo_NK.svg" alt="Národní knihovna">
+  </a>
 </div>
 }

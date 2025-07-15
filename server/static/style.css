@@ -252,6 +252,10 @@ tbody > tr:nth-of-type(odd) {
 .header {
     margin: 1rem 0;
     width: var(--paragraph-width);
+    justify-content: center;
+}
+.header > a {
+    margin: 0 0.5rem;
 }
 
 /* main */

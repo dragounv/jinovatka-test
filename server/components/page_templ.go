@@ -82,7 +82,7 @@ func header() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex-row header\"><!-- webarchiv logo --><!-- <a class=\"reversed-link logo\" href=\"https://www.webarchiv.cz\">\n    <h4>Webarchiv</h4>\n  </a> --><div><a href=\"/\">index</a><!-- <a href=\"/result/\">výsledek</a> --><a href=\"/about/\">about</a> <a href=\"/admin/\">admin</a></div><!-- NK logo --><a class=\"logo-nk\" href=\"https://www.nkp.cz\"><img src=\"/static/logo_NK.svg\" alt=\"Národní knihovna\"></a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"flex-row header\"><!-- webarchiv logo --><!-- <a class=\"reversed-link logo\" href=\"https://www.webarchiv.cz\">\n    <h4>Webarchiv</h4>\n  </a> --><a href=\"/\">index</a> <a href=\"/about/\">about</a> <a href=\"/admin/\">admin</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -111,7 +111,7 @@ func footer() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<hr><div class=\"flex-row footer\"><div><p><a href=\"https://www.webarchiv.cz\">Webarchiv</a> je součástí<br><a href=\"https://www.nkp.cz\">Národní knihovny ČR</a></p></div><div><p>Credits placeholder <br>so many amazing people worked on this <br>oh, and did you knkow it was made for some project or something</p></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<hr><div class=\"flex-row footer\"><div><p><a href=\"https://www.webarchiv.cz\">Webarchiv</a> je součástí<br><a href=\"https://www.nkp.cz\">Národní knihovny ČR</a></p></div><!-- NK logo --><a class=\"logo-nk\" href=\"https://www.nkp.cz\"><img src=\"/static/logo_NK.svg\" alt=\"Národní knihovna\"></a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
