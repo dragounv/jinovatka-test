@@ -6,6 +6,7 @@ import (
 	"jinovatka/server/handlers/admin"
 	"jinovatka/server/handlers/group"
 	"jinovatka/server/handlers/index"
+	"jinovatka/server/handlers/seed"
 	"jinovatka/server/handlers/static"
 	"jinovatka/services"
 	"log/slog"
@@ -25,6 +26,7 @@ func NewServer(ctx context.Context, log *slog.Logger, addr string, services *ser
 		static.NewStaticHandler(log, staticFiles /* from embed.go */),
 		group.NewGroupHandler(log, services.SeedService),
 		admin.NewAdminHandler(log),
+		seed.NewSeedHandler(log, services.SeedService),
 	)
 
 	server := &http.Server{
