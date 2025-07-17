@@ -189,11 +189,21 @@ func (repository *SeedRepository) SaveGroup(seedsGroup *entities.SeedsGroup) err
 }
 
 func (repoository *SeedRepository) GetGroup(shadow string) (*entities.SeedsGroup, error) {
-	var groupRecord = new(SeedsGroup)
+	groupRecord := new(SeedsGroup)
 	err := repoository.DB.Model(&SeedsGroup{}).Preload("Seeds").First(groupRecord, "shadow_id = ?", shadow).Error
 	if err != nil {
-		return nil, fmt.Errorf("SeedRepository.GetGroup failed to fetch group from db: %w", err)
+		return nil, fmt.Errorf("SeedRepository.GetGroup failed to fetch SeedsGroup from db: %w", err)
 	}
 	group := groupRecord.ToEntity()
 	return group, nil
+}
+
+func (repository *SeedRepository) GetSeed(shadow string) (*entities.Seed, error) {
+	seedRecord := new(Seed)
+	err := repository.DB.First(seedRecord, "shadow_id = ?", shadow).Error
+	if err != nil {
+		return nil, fmt.Errorf("SeedRepository.GetSeed failed to fetch Seed from db: %w", err)
+	}
+	seed := seedRecord.ToEntity()
+	return seed, nil
 }
