@@ -13,14 +13,18 @@ import (
 type GroupHandler struct {
 	Log         *slog.Logger
 	SeedService *services.SeedService
+
+	// Subhandlers
+	SaveGroupHandler *SaveGroupHandler
 }
 
 func NewGroupHandler(log *slog.Logger, seedService *services.SeedService) *GroupHandler {
 	assert.Must(log != nil, "NewGroupHandler: log can't be nil")
 	assert.Must(seedService != nil, "NewGroupHandler: seedService can't be nil")
 	return &GroupHandler{
-		Log:         log,
-		SeedService: seedService,
+		Log:              log,
+		SeedService:      seedService,
+		SaveGroupHandler: NewSaveGroupHandler(log, seedService),
 	}
 }
 
@@ -47,4 +51,5 @@ func (handler *GroupHandler) View(w http.ResponseWriter, r *http.Request, data *
 
 func (handler *GroupHandler) Routes(mux *http.ServeMux) {
 	mux.Handle("GET /seeds/{id}", handler)
+	mux.Handle("POST /seeds/save/", handler.SaveGroupHandler)
 }

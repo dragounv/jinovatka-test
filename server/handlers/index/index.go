@@ -3,7 +3,6 @@ package index
 import (
 	"jinovatka/assert"
 	"jinovatka/server/components"
-	"jinovatka/services"
 	"jinovatka/utils"
 	"log/slog"
 	"net/http"
@@ -12,17 +11,12 @@ import (
 // Main handler for routes "/" and "/index.html"
 type IndexHandler struct {
 	Log *slog.Logger
-
-	// Subhandlers
-	SaveSeedHandler *SaveSeedHandler
 }
 
-func NewIndexHandler(log *slog.Logger, seedService *services.SeedService) *IndexHandler {
+func NewIndexHandler(log *slog.Logger) *IndexHandler {
 	assert.Must(log != nil, "NewIndexHandler: log can't be nil")
-	assert.Must(seedService != nil, "NewIndexHandler: seedService can't be nil")
 	return &IndexHandler{
-		Log:             log,
-		SaveSeedHandler: NewSaveSeedHanlder(log, seedService),
+		Log: log,
 	}
 }
 
@@ -37,5 +31,4 @@ func (handler *IndexHandler) View(w http.ResponseWriter, r *http.Request) error 
 
 func (handler *IndexHandler) Routes(mux *http.ServeMux) {
 	mux.Handle("/", handler)
-	mux.Handle("POST /save-seed/", handler.SaveSeedHandler)
 }

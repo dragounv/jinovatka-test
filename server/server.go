@@ -22,7 +22,7 @@ func NewServer(ctx context.Context, log *slog.Logger, addr string, services *ser
 
 	// Add all handlers to the router
 	router.AddHandlers(
-		index.NewIndexHandler(log, services.SeedService),
+		index.NewIndexHandler(log),
 		static.NewStaticHandler(log, staticFiles /* from embed.go */),
 		group.NewGroupHandler(log, services.SeedService),
 		admin.NewAdminHandler(log),
