@@ -21,17 +21,21 @@ templ groupView(data *GroupViewData) {
 	<table>
 		<thead>
 			<tr>
-				<th>Shadow</th>
-				<th>URL Adresa</th>
+				<th>URL</th>
+				<th>ID</th>
 				<th>Stav</th>
 			</tr>
 		</thead>
 		<tbody>
 		for _, seed := range data.Group.Seeds {
 			<tr>
-				<td>{seed.ShadowID}</td>
-				<td>{seed.URL}</td>
-				<td>{seed.State}</td>
+				<td><a href={ seed.URL }>{ seed.URL }</a></td>
+				<td><a href={ "/seed/" + seed.ShadowID }>{ seed.ShadowID }</a></td>
+					if seed.State == entities.HarvestedSucessfully {
+						<td>Úspěšně sklizeno</td>
+					} else {
+						<td>Nesklizeno</td>
+					}
 			</tr>
 		}
 		</tbody>
