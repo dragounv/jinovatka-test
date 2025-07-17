@@ -73,8 +73,16 @@ main > article:last-of-type {
     margin-bottom: 0;
 }
 
+header {
+    margin-top: 1rem;
+}
+
 p {
     line-height: 24px;
+}
+
+.blue-text {
+    color: var(--clr-webarchiv-blue);
 }
 
 h1,

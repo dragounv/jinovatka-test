@@ -17,7 +17,7 @@ func AdminView(data *AdminViewData) templ.Component {
 
 func GroupView(data *GroupViewData) templ.Component {
 	return Assemble(&PageComponents{
-		Header: header(data.Heading),
+		Header: groupHeader(),
 		Main:   groupView(data),
 	})
 }
@@ -25,7 +25,7 @@ func GroupView(data *GroupViewData) templ.Component {
 func SeedView(data *SeedViewData) templ.Component {
 	return Assemble(&PageComponents{
 		Title:  data.Title,
-		Header: header(data.Heading),
+		Header: seedHeader(data.Seed.URL),
 		Main:   seedView(data),
 	})
 }

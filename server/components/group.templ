@@ -9,15 +9,23 @@ type GroupViewData struct {
 	Group *entities.SeedsGroup
 }
 
-func NewGroupViewData(seedsGroup *entities.SeedsGroup, heading string) *GroupViewData {
+func NewGroupViewData(seedsGroup *entities.SeedsGroup) *GroupViewData {
 	return &GroupViewData{
-		Heading: heading,
 		Group: seedsGroup,
 	}
 }
 
+templ groupHeader() {
+	<div class="header">
+		<h1><span class="blue-text">Přehled</span> semínek</h1>
+		<p>Zde můžete sledovat stav vašich semínek</p>
+	</div>
+	<hr class="no-bottom-margin">
+}
+
 templ groupView(data *GroupViewData) {
 <div class="flex-content-column">
+	<h2>Přehled stavu semínek</h2>
 	<table>
 		<thead>
 			<tr>

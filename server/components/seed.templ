@@ -6,24 +6,31 @@ import (
 
 type SeedViewData struct {
 	Title string
-	Heading string
 	Seed *entities.Seed
 }
 
-func NewSeedViewData(seed *entities.Seed, title, heading string) *SeedViewData {
+func NewSeedViewData(seed *entities.Seed, title string) *SeedViewData {
 	return &SeedViewData{
 		Title: title,
-		Heading: heading,
 		Seed: seed,
 	}
 }
 
+templ seedHeader(seedURL string) {
+	<div class="header">
+		<h1><span class="blue-text">Semínko </span>{ seedURL }</h1>
+		<p>Detailní informace o semínku</p>
+	</div>
+	<hr class="no-bottom-margin">
+}
+
 templ seedView(data *SeedViewData) {
 <div class="flex-content-column">
+	<h2>Detail semínka</h2>
 	<table>
 		<tbody>
 			<tr>
-				<td>URL Adresa:</td>
+				<td>URL:</td>
 				<td>{data.Seed.URL}</td>
 			</tr>
 			<tr>
@@ -44,17 +51,27 @@ templ seedView(data *SeedViewData) {
 				// TODO: Add other messages for cases where there was error during crawl.
 			</tr>
 			if data.Seed.State == entities.HarvestedSucessfully {
+				
+			}
 				<tr>
 					<td>Archivní odkaz:</td>
-					<td>{data.Seed.ArchivalURL}</td>
-					// TODO: This should be link. There should also be a copy button.
+					if data.Seed.State == entities.HarvestedSucessfully {
+						<td><a href={ data.Seed.ArchivalURL }>{ data.Seed.ArchivalURL }</a></td>
+						// TODO: This should be link. There should also be a copy button.
+					} else {
+						<td>-</td>
+					}
+					
 				</tr>
 				<tr>
 					<td>Datum sklizně:</td>
-					<td>{data.Seed.HarvestedAt.String()}</td>
-					// TODO: Use custom format sring for the time.Time.
+					if data.Seed.State == entities.HarvestedSucessfully {
+						<td>{ data.Seed.HarvestedAt.String() }</td>
+						// TODO: Use custom format sring for the time.Time.
+					} else {
+						<td>-</td>
+					}
 				</tr>
-			}
 			// TODO: Maybe add shadowID or the shadow link to this page.
 		</tbody>
 	</table>
