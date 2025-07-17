@@ -20,4 +20,5 @@ type SeedRepository interface {
 	Save([]*entities.Seed) error
 	SaveGroup(*entities.SeedsGroup) error
 	GetGroup(shadow string) (*entities.SeedsGroup, error)
+	GetSeed(shadow string) (*entities.Seed, error)
 }
