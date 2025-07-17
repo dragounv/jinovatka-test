@@ -1,10 +1,14 @@
 package components
 
-const defaultTitle = "Webarchiv - Jinovatka"
+const (
+	defaultTitle = "Webarchiv - Jinovatka"
+	defaultHeading = "Webarchiv"
+)
 
 type PageComponents struct {
 	Title string
 	Header templ.Component
+	Navigation templ.Component
 	Main templ.Component
 	Footer templ.Component
 }
@@ -14,7 +18,10 @@ func Assemble(components *PageComponents) templ.Component {
 		components.Title = defaultTitle
 	}
 	if components.Header == nil {
-		components.Header = header()
+		components.Header = header(defaultHeading)
+	}
+	if components.Navigation == nil {
+		components.Navigation = nav()
 	}
 	if components.Footer == nil {
 		components.Footer = footer()
@@ -32,8 +39,11 @@ templ page(components *PageComponents) {
 	<link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-	<header>
+	<header class="flex-content-column">
 		@components.Header
+		<nav>
+			@components.Navigation
+		</nav>
 	</header>
 	<main>
 		@components.Main
@@ -45,8 +55,15 @@ templ page(components *PageComponents) {
 </html>
 }
 
-templ header() {
-<div class="flex-row header">
+templ header(heading string) {
+<div class="header">
+	<h1>{heading}</h1>
+</div>
+<hr class="no-bottom-margin">
+}
+
+templ nav() {
+<div class="flex-row nav">
 	<a href="/">index</a>
 	<a href="/about/">about</a>
 	<a href="/admin/">admin</a>

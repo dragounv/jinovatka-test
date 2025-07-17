@@ -1,69 +1,74 @@
 package components
 
+templ indexHeader() {
+<div class="header">
+	<h1><a href="https://www.webarchiv.cz">Webarchiv</a> archivuje citace</h1>
+	<p>Pomůžeme vám uchovat zdroje k vaší práci</p>
+</div>
+<hr class="no-bottom-margin">
+}
+
 templ indexView() {
-    <div class="flex-content-column">
-        <h1><a href="https://www.webarchiv.cz">Webarchiv</a> archivuje citace</h1>
-        <p>Pomůžeme vám uchovat zdroje k vaší práci</p>
-        <hr>
-        <!-- Vyhledávací / zadávací pole -->
-        <section>
-            <form action="/save-seed/" method="post" enctype="multipart/form-data">
-            <div class="flex-row">
-                <label for="url-list">zadejte jednu nebo více URL adres</label>
-                <button type="submit">Odeslat</button>
-            </div>
-            <textarea name="url-list" id="url-list" placeholder="https://example.com" required wrap="off" ></textarea>
-            </form>
-        </section>
-        <section class="error-output hidden">
-            <p>Tady se budou zobrazovat případné poblémy. Např. Utekli vám slepice!</p>
-        </section>
-        <script>
-            // Workaround for multiline placeholder
-            const textarea = document.querySelector("textarea");
-            textarea.setAttribute("placeholder", "https://example.com\nhttps://another.example.com");
-        </script>
-    </div>
-    <!-- Tabulka předchozích výsledků -->
-    <section class="flex-column">
-    <div class="flex-content-column">
-        <h2>Nedávno sklizené</h2>
-        <p>Nedávno sklizené výsledky. Ušetře si čas a použijte existující odkaz.</p>
-    </div>
-    <table>
-        <thead>
-        <tr>
-            <th>URL adresa</th>
-            <th>Poslední sklizeň</th>
-            <th>Archivní URL adresa</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td><a href="">https://www.webarchiv.cz</a></td>
-            <td>-</td>
-            <td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
-        </tr>
-        <tr>
-            <td><a href="">https://rozhodne.neexistuju.ja</a></td>
-            <td>-</td>
-            <td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
-        </tr>
-        <tr>
-            <td><a href="">https://www.nkp.cz</a></td>
-            <td>-</td>
-            <td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
-        </tr>
-        <tr>
-            <td><a href="">https://www.example.com</a></td>
-            <td>-</td>
-            <td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.example.com</a></td>
-        </tr>
-        </tbody>
-    </table>
-    </section>
-    <!-- Úvodní text -->
-    <!-- <section class="flex-content-column">
-    Informace o službě / projektu / použití
-    </section> -->
+	<div class="flex-content-column">
+		<!-- Vyhledávací / zadávací pole -->
+		<section>
+			<form action="/save-seed/" method="post" enctype="multipart/form-data">
+			<div class="flex-row">
+				<label for="url-list">zadejte jednu nebo více URL adres</label>
+				<button type="submit">Odeslat</button>
+			</div>
+			<textarea name="url-list" id="url-list" placeholder="https://example.com" required wrap="off" ></textarea>
+			</form>
+		</section>
+		<section class="error-output hidden">
+			<p>Tady se budou zobrazovat případné poblémy. Např. Utekli vám slepice!</p>
+		</section>
+		<script>
+			// Workaround for multiline placeholder
+			const textarea = document.querySelector("textarea");
+			textarea.setAttribute("placeholder", "https://example.com\nhttps://another.example.com");
+		</script>
+	</div>
+	<!-- Tabulka předchozích výsledků -->
+	<section class="flex-column">
+	<div class="flex-content-column">
+		<h2>Nedávno sklizené</h2>
+		<p>Nedávno sklizené výsledky. Ušetře si čas a použijte existující odkaz.</p>
+	</div>
+	<table>
+		<thead>
+		<tr>
+			<th>URL adresa</th>
+			<th>Poslední sklizeň</th>
+			<th>Archivní URL adresa</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td><a href="">https://www.webarchiv.cz</a></td>
+			<td>-</td>
+			<td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
+		</tr>
+		<tr>
+			<td><a href="">https://rozhodne.neexistuju.ja</a></td>
+			<td>-</td>
+			<td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
+		</tr>
+		<tr>
+			<td><a href="">https://www.nkp.cz</a></td>
+			<td>-</td>
+			<td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td>
+		</tr>
+		<tr>
+			<td><a href="">https://www.example.com</a></td>
+			<td>-</td>
+			<td><a href="">https://wayback.webarchiv.cz/wayback/250311000000/www.example.com</a></td>
+		</tr>
+		</tbody>
+	</table>
+	</section>
+	<!-- Úvodní text -->
+	<!-- <section class="flex-content-column">
+	Informace o službě / projektu / použití
+	</section> -->
 }

@@ -32,7 +32,7 @@ func (handler *GroupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		handler.Log.Error("NewGroupHandler.ServeHTTP failed to fetch SeedsGroup data", "error", err.Error(), utils.LogRequestInfo(r))
 		return
 	}
-	data := components.NewGroupViewData(group)
+	data := components.NewGroupViewData(group, "Přehled semínek")
 	err = handler.View(w, r, data)
 	if err != nil {
 		handler.Log.Error("NewGroupHandler.ServeHTTP failed to render view", "error", err.Error(), utils.LogRequestInfo(r))

@@ -8,7 +8,7 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func indexView() templ.Component {
+func indexHeader() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +29,36 @@ func indexView() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex-content-column\"><h1><a href=\"https://www.webarchiv.cz\">Webarchiv</a> archivuje citace</h1><p>Pomůžeme vám uchovat zdroje k vaší práci</p><hr><!-- Vyhledávací / zadávací pole --><section><form action=\"/save-seed/\" method=\"post\" enctype=\"multipart/form-data\"><div class=\"flex-row\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <button type=\"submit\">Odeslat</button></div><textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea></form></section><section class=\"error-output hidden\"><p>Tady se budou zobrazovat případné poblémy. Např. Utekli vám slepice!</p></section><script>\n            // Workaround for multiline placeholder\n            const textarea = document.querySelector(\"textarea\");\n            textarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n        </script></div><!-- Tabulka předchozích výsledků --><section class=\"flex-column\"><div class=\"flex-content-column\"><h2>Nedávno sklizené</h2><p>Nedávno sklizené výsledky. Ušetře si čas a použijte existující odkaz.</p></div><table><thead><tr><th>URL adresa</th><th>Poslední sklizeň</th><th>Archivní URL adresa</th></tr></thead> <tbody><tr><td><a href=\"\">https://www.webarchiv.cz</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://rozhodne.neexistuju.ja</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://www.nkp.cz</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://www.example.com</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.example.com</a></td></tr></tbody></table></section><!-- Úvodní text --><!-- <section class=\"flex-content-column\">\n    Informace o službě / projektu / použití\n    </section> -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"header\"><h1><a href=\"https://www.webarchiv.cz\">Webarchiv</a> archivuje citace</h1><p>Pomůžeme vám uchovat zdroje k vaší práci</p></div><hr class=\"no-bottom-margin\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func indexView() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex-content-column\"><!-- Vyhledávací / zadávací pole --><section><form action=\"/save-seed/\" method=\"post\" enctype=\"multipart/form-data\"><div class=\"flex-row\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <button type=\"submit\">Odeslat</button></div><textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea></form></section><section class=\"error-output hidden\"><p>Tady se budou zobrazovat případné poblémy. Např. Utekli vám slepice!</p></section><script>\n\t\t\t// Workaround for multiline placeholder\n\t\t\tconst textarea = document.querySelector(\"textarea\");\n\t\t\ttextarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n\t\t</script></div><!-- Tabulka předchozích výsledků --><section class=\"flex-column\"><div class=\"flex-content-column\"><h2>Nedávno sklizené</h2><p>Nedávno sklizené výsledky. Ušetře si čas a použijte existující odkaz.</p></div><table><thead><tr><th>URL adresa</th><th>Poslední sklizeň</th><th>Archivní URL adresa</th></tr></thead> <tbody><tr><td><a href=\"\">https://www.webarchiv.cz</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://rozhodne.neexistuju.ja</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://www.nkp.cz</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.webarchiv.cz</a></td></tr><tr><td><a href=\"\">https://www.example.com</a></td><td>-</td><td><a href=\"\">https://wayback.webarchiv.cz/wayback/250311000000/www.example.com</a></td></tr></tbody></table></section><!-- Úvodní text --><!-- <section class=\"flex-content-column\">\n\tInformace o službě / projektu / použití\n\t</section> -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

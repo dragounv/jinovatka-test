@@ -31,8 +31,8 @@ func (handler *SeedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		handler.Log.Error("SeedHandler.ServeHTTP failed to get Seed data from SeedService", "error", err.Error(), utils.LogRequestInfo(r))
 		return
 	}
-	data := components.NewSeedViewData(seed)
-	err = handler.View(w, r, data, "Semínko - "+seed.URL)
+	data := components.NewSeedViewData(seed, "Semínko - "+seed.URL, "Semínko "+seed.URL)
+	err = handler.View(w, r, data)
 	if err != nil {
 		handler.Log.Error("SeedHandler.ServeHTTP failed to render view", "error", err.Error(), utils.LogRequestInfo(r))
 		return
@@ -40,8 +40,8 @@ func (handler *SeedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	handler.Log.Info("SeedHandler.ServeHTTP sucessfully responded", utils.LogRequestInfo(r))
 }
 
-func (handler *SeedHandler) View(w http.ResponseWriter, r *http.Request, data *components.SeedViewData, title string) error {
-	return components.SeedView(data, title).Render(r.Context(), w)
+func (handler *SeedHandler) View(w http.ResponseWriter, r *http.Request, data *components.SeedViewData) error {
+	return components.SeedView(data).Render(r.Context(), w)
 }
 
 func (handler *SeedHandler) Routes(mux *http.ServeMux) {
