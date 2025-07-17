@@ -13,3 +13,7 @@ func AdminView(data *AdminViewData) templ.Component {
 func GroupView(data *GroupViewData) templ.Component {
 	return wrapMain(groupView(data))
 }
+
+func SeedView(data *SeedViewData) templ.Component {
+	return wrapMain(seedView(data))
+}
