@@ -133,3 +133,7 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 func (service *SeedService) GetGroup(shadow string) (*entities.SeedsGroup, error) {
 	return service.Repository.GetGroup(shadow)
 }
+
+func (service *SeedService) GetSeed(shadow string) (*entities.Seed, error) {
+	return service.Repository.GetSeed(shadow)
+}
