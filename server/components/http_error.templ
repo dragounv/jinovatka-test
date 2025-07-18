@@ -1,0 +1,32 @@
+package components
+
+type ErrorViewData struct {
+	Title string
+	Code string
+	Description string
+	ShortMessage string
+}
+
+func NewErrorViewData(title, code, description, shortMessage string) *ErrorViewData {
+	return &ErrorViewData{
+		Title: title,
+		Code: code,
+		Description: description,
+		ShortMessage: shortMessage,
+	}
+}
+
+templ errorHeader(data *ErrorViewData) {
+	<div class="header">
+		<h1><span class="blue-text">{ data.Code }</span></h1>
+		//<p></p>
+	</div>
+	<hr class="no-bottom-margin">
+}
+
+templ errorView(data *ErrorViewData) {
+	<div class="flex-content-column">
+		<h2>{ data.Description }</h2>
+		<p>{ data.ShortMessage }</p>
+	</div>
+}

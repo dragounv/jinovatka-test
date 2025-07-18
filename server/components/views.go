@@ -29,3 +29,11 @@ func SeedView(data *SeedViewData) templ.Component {
 		Main:   seedView(data),
 	})
 }
+
+func ErrorView(data *ErrorViewData) templ.Component {
+	return Assemble(&PageComponents{
+		Title:  data.Title,
+		Header: errorHeader(data),
+		Main:   errorView(data),
+	})
+}
