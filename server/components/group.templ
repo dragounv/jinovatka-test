@@ -48,5 +48,10 @@ templ groupView(data *GroupViewData) {
 		}
 		</tbody>
 	</table>
+	<div class="flex-row">
+		<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
+			<button type="submit">Exportovat do XLSX</button>
+		</form>
+	</div>
 </div>
 }

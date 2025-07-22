@@ -18,11 +18,14 @@ func NewServices(log *slog.Logger, repository *storage.Repository) *Services {
 	assert.Must(log != nil, "NewServices: log can't be nil")
 	assert.Must(repository != nil, "NewServices: repository can't be nil")
 	seedService := NewSeedService(log, repository.SeedRepository, MaxUrlAdressLength, MaxInputedUrlAddresses)
+	exporterService := NewExporterService()
 	return &Services{
-		SeedService: seedService,
+		SeedService:     seedService,
+		ExporterService: exporterService,
 	}
 }
 
 type Services struct {
-	SeedService *SeedService
+	SeedService     *SeedService
+	ExporterService *ExporterService
 }

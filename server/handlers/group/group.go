@@ -20,18 +20,25 @@ type GroupHandler struct {
 	ErrorHandler *httperror.ErrorHandler
 
 	// Subhandlers
-	SaveGroupHandler *SaveGroupHandler
+	SaveGroupHandler   *SaveGroupHandler
+	ExportGroupHandler *ExportGroupHandler
 }
 
-func NewGroupHandler(log *slog.Logger, seedService *services.SeedService, errorHandler *httperror.ErrorHandler) *GroupHandler {
+func NewGroupHandler(
+	log *slog.Logger,
+	seedService *services.SeedService,
+	exporterService *services.ExporterService,
+	errorHandler *httperror.ErrorHandler,
+) *GroupHandler {
 	assert.Must(log != nil, "NewGroupHandler: log can't be nil")
 	assert.Must(seedService != nil, "NewGroupHandler: seedService can't be nil")
 	assert.Must(errorHandler != nil, "NewGroupHandler: errorHandler can't be nil")
 	return &GroupHandler{
-		Log:              log,
-		SeedService:      seedService,
-		ErrorHandler:     errorHandler,
-		SaveGroupHandler: NewSaveGroupHandler(log, seedService, errorHandler),
+		Log:                log,
+		SeedService:        seedService,
+		ErrorHandler:       errorHandler,
+		SaveGroupHandler:   NewSaveGroupHandler(log, seedService, errorHandler),
+		ExportGroupHandler: NewExportGroupHandler(log, seedService, exporterService, errorHandler),
 	}
 }
 
@@ -64,4 +71,5 @@ func (handler *GroupHandler) View(w http.ResponseWriter, r *http.Request, data *
 func (handler *GroupHandler) Routes(mux *http.ServeMux) {
 	mux.Handle("GET /seeds/{id}", handler)
 	mux.Handle("POST /seeds/save/", handler.SaveGroupHandler)
+	mux.Handle("GET /seeds/export/{id}", handler.ExportGroupHandler)
 }
