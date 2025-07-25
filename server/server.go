@@ -28,7 +28,7 @@ func NewServer(ctx context.Context, log *slog.Logger, addr string, services *ser
 	router.AddHandlers(
 		index.NewIndexHandler(log, errorHandler),
 		static.NewStaticHandler(log, staticFiles /* from embed.go */),
-		group.NewGroupHandler(log, services.SeedService, services.ExporterService, errorHandler),
+		group.NewGroupHandler(log, services.SeedService, services.ExporterService, services.CaptureService, errorHandler),
 		admin.NewAdminHandler(log),
 		seed.NewSeedHandler(log, services.SeedService, errorHandler),
 	)

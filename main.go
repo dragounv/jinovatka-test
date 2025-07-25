@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	valkeyq "jinovatka/queue/valkey"
 	"jinovatka/server"
 	"jinovatka/services"
 	"jinovatka/storage"
@@ -14,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/valkey-io/valkey-go"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -28,6 +30,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Prepare queue client
+	client, err := valkey.NewClient(valkey.ClientOption{InitAddress: []string{"127.0.0.1:6379"}})
+	if err != nil {
+		log.Error("failed to create valkey client", "error", err.Error())
+	}
+
 	// Catch SIGINT and SIGHUP. Prepare gentle shutdown.
 	signals := []os.Signal{os.Interrupt}
 	if runtime.GOOS == "linux" {
@@ -40,12 +48,14 @@ func main() {
 	seedRepository := gormStorage.NewSeedRepository(log, db)
 	repository := storage.NewRepository(seedRepository)
 
+	queue := valkeyq.NewQueue(log, client)
+
 	const addr = "localhost:8080"
 	server := server.NewServer(
 		stopSignal,
 		log,
 		addr,
-		services.NewServices(log, repository),
+		services.NewServices(log, repository, queue),
 	)
 
 	// Start the server in new goroutine
