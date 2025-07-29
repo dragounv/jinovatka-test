@@ -15,9 +15,10 @@ import (
 
 // Hanlder for seed groups. Used to create/show list of seeds to make tracking of progress of individual seeds easier.
 type GroupHandler struct {
-	Log          *slog.Logger
-	SeedService  *services.SeedService
-	ErrorHandler *httperror.ErrorHandler
+	Log            *slog.Logger
+	SeedService    *services.SeedService
+	CaptureService *services.CaptureService
+	ErrorHandler   *httperror.ErrorHandler
 
 	// Subhandlers
 	SaveGroupHandler   *SaveGroupHandler
@@ -28,16 +29,19 @@ func NewGroupHandler(
 	log *slog.Logger,
 	seedService *services.SeedService,
 	exporterService *services.ExporterService,
+	captureService *services.CaptureService,
 	errorHandler *httperror.ErrorHandler,
 ) *GroupHandler {
 	assert.Must(log != nil, "NewGroupHandler: log can't be nil")
 	assert.Must(seedService != nil, "NewGroupHandler: seedService can't be nil")
+	assert.Must(exporterService != nil, "NewGroupHandler: exporterService can't be nil")
+	assert.Must(captureService != nil, "NewGroupHandler: captureService can't be nil")
 	assert.Must(errorHandler != nil, "NewGroupHandler: errorHandler can't be nil")
 	return &GroupHandler{
 		Log:                log,
 		SeedService:        seedService,
 		ErrorHandler:       errorHandler,
-		SaveGroupHandler:   NewSaveGroupHandler(log, seedService, errorHandler),
+		SaveGroupHandler:   NewSaveGroupHandler(log, seedService, captureService, errorHandler),
 		ExportGroupHandler: NewExportGroupHandler(log, seedService, exporterService, errorHandler),
 	}
 }
