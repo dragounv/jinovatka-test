@@ -6,7 +6,7 @@ import path from "path";
 
 // Global constants
 const requestQueueKey = "queue:requests";
-const responseQueueKey = "queue:responses";
+const resultQueueKey = "queue:results";
 
 async function main() {
   // Prepare config
@@ -100,12 +100,12 @@ async function run(captureSettings, config) {
     console.log(request.Status);
     console.log("--------------------");
     await captureRequest(request, captureSettings, config);
-    /** @type { CaptureResponse } */
+    /** @type { CaptureResult } */
     const response = {
       SeedShadowID: request.SeedShadowID,
       Status: "DoneSuccess",
     };
-    await enqueueResponse(valkey, response);
+    await enqueueResult(valkey, response);
   }
 }
 
@@ -145,11 +145,11 @@ async function captureRequest(request, captureSettings, config) {
 /**
  *
  * @param { Valkey } valkey
- * @param { CaptureResponse } response
+ * @param { CaptureResult } result
  */
-async function enqueueResponse(valkey, response) {
-  const data = JSON.stringify(response);
-  await valkey.rpush(responseQueueKey, data);
+async function enqueueResult(valkey, result) {
+  const data = JSON.stringify(result);
+  await valkey.rpush(resultQueueKey, data);
 }
 
 // --- Type definitions ---
@@ -168,7 +168,7 @@ async function enqueueResponse(valkey, response) {
  */
 
 /**
- * @typedef { object } CaptureResponse
+ * @typedef { object } CaptureResult
  * @property { string } SeedShadowID
  * @property { CaptureStatus } Status
  */
