@@ -107,6 +107,10 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 	}
 	seeds := make([]*entities.Seed, 0, len(lines))
 	for _, url := range lines {
+		url = strings.TrimSpace(url)
+		if url == "" { // Skip empty lines
+			continue
+		}
 		url, err := service.UrlParser.ParseAndCleanURL(url, false)
 		if err != nil {
 			// TODO: Log this in some smart way.
