@@ -2,6 +2,7 @@ package queue
 
 import (
 	"context"
+	"errors"
 	"jinovatka/entities"
 	"time"
 )
@@ -24,3 +25,7 @@ type Queue interface {
 	// If timeout is zero, no timeout will be used.
 	AwaitResult(ctx context.Context, timeout time.Duration) (*entities.CaptureResult, error)
 }
+
+// Use to cath potential timeouts that are not supposed to propagate.
+// Only methods with timeout can return this error.
+var QueueTimeoutError = errors.New("operation timed out")

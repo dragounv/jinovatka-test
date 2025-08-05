@@ -137,3 +137,7 @@ func (service *SeedService) GetGroup(shadow string) (*entities.SeedsGroup, error
 func (service *SeedService) GetSeed(shadow string) (*entities.Seed, error) {
 	return service.Repository.GetSeed(shadow)
 }
+
+func (service *SeedService) UpdateStatus(shadow string, status entities.SeedState) error {
+	return service.Repository.UpdateStatus(shadow, status)
+}

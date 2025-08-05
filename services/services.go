@@ -20,7 +20,7 @@ func NewServices(log *slog.Logger, repository *storage.Repository, queue queue.Q
 	assert.Must(repository != nil, "NewServices: repository can't be nil")
 	seedService := NewSeedService(log, repository.SeedRepository, MaxUrlAdressLength, MaxInputedUrlAddresses)
 	exporterService := NewExporterService()
-	captureService := NewCaptureService(queue)
+	captureService := NewCaptureService(log, queue, seedService)
 	return &Services{
 		SeedService:     seedService,
 		ExporterService: exporterService,

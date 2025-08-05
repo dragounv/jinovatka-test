@@ -37,6 +37,7 @@ func main() {
 	}
 
 	// Catch SIGINT and SIGHUP. Prepare gentle shutdown.
+	// TODO: There are more signals that need catching
 	signals := []os.Signal{os.Interrupt}
 	if runtime.GOOS == "linux" {
 		signals = append(signals, syscall.SIGHUP)
@@ -50,17 +51,23 @@ func main() {
 
 	queue := valkeyq.NewQueue(log, client)
 
+	initiatedServices := services.NewServices(log, repository, queue)
+
 	const addr = "localhost:8080"
 	server := server.NewServer(
 		stopSignal,
 		log,
 		addr,
-		services.NewServices(log, repository, queue),
+		initiatedServices,
 	)
 
 	// Start the server in new goroutine
 	go server.ListenAndServe()
 	log.Info("Server is listening at http://" + addr)
+
+	// Start listening for results from queue
+	initiatedServices.CaptureService.ListenForResults(stopSignal)
+	log.Info("CaptureService is listening for CaptureResults")
 
 	// Wait for interupt
 	<-stopSignal.Done()

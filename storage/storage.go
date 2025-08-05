@@ -21,4 +21,5 @@ type SeedRepository interface {
 	SaveGroup(*entities.SeedsGroup) error
 	GetGroup(shadow string) (*entities.SeedsGroup, error)
 	GetSeed(shadow string) (*entities.Seed, error)
+	UpdateStatus(shadow string, status entities.SeedState) error
 }

@@ -207,3 +207,11 @@ func (repository *SeedRepository) GetSeed(shadow string) (*entities.Seed, error)
 	seed := seedRecord.ToEntity()
 	return seed, nil
 }
+
+func (repository *SeedRepository) UpdateStatus(shadow string, status entities.SeedState) error {
+	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("state").Updates(Seed{State: string(status)}).Error
+	if err != nil {
+		return fmt.Errorf("SeedRepository.UpdateStatus failed to update Seed with shadow %s :%w", shadow, err)
+	}
+	return nil
+}

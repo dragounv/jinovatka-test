@@ -6,16 +6,24 @@ import (
 	"jinovatka/assert"
 	"jinovatka/entities"
 	"jinovatka/queue"
+	"log/slog"
+	"time"
 )
 
 type CaptureService struct {
-	Queue queue.Queue
+	Log         *slog.Logger
+	Queue       queue.Queue
+	SeedService *SeedService
 }
 
-func NewCaptureService(queue queue.Queue) *CaptureService {
+func NewCaptureService(log *slog.Logger, queue queue.Queue, seedService *SeedService) *CaptureService {
+	assert.Must(log != nil, "NewCaptureService: log can't be nil")
 	assert.Must(queue != nil, "NewCaptureService: queue can't be nil")
+	assert.Must(seedService != nil, "NewCaptureService: seedService can't be nil")
 	return &CaptureService{
-		Queue: queue,
+		Log:         log,
+		Queue:       queue,
+		SeedService: seedService,
 	}
 }
 
@@ -39,4 +47,41 @@ func (service *CaptureService) CaptureSeed(ctx context.Context, seed *entities.S
 		return fmt.Errorf("CaptureService.CaptureSeed Queue.Enqueue returned error: %w", err)
 	}
 	return nil
+}
+
+// WARNING: This function blocks indefinitely and should be run in separate goroutine.
+//
+// If timeout is zero, this function blocks until CaptureResult can be dequeued.
+// If timeout is nonzero and no CaptureResult is available, this function blocks
+// until timeout runs out and then returns QueueTimeoutError and nil CaptureResult.
+func (service *CaptureService) AwaitResult(ctx context.Context, timeout time.Duration) (*entities.CaptureResult, error) {
+	return service.Queue.AwaitResult(ctx, timeout)
+}
+
+// Starts a new goroutine that listens for and handles CaptureResults that are being enququed from workers.
+func (service *CaptureService) ListenForResults(ctx context.Context) {
+	go service.listenForResults(ctx)
+}
+
+func (service *CaptureService) listenForResults(ctx context.Context) {
+	// While context is not done, try fetchig next result.
+	for ctx.Err() == nil {
+		const noTimeout = 0
+		result, err := service.AwaitResult(ctx, noTimeout)
+		if err != nil {
+			service.Log.Error("CaptureService.listenForResults failed to AwaitResult", "error", err.Error())
+			break
+		}
+		service.Log.Info("Got result", "shadowID", result.SeedShadowID, "status", result.Status)
+
+		// Update state of seed
+		// TODO: I need to completely rework SeedState
+		// This is dummy code for now
+		err = service.SeedService.UpdateStatus(result.SeedShadowID, entities.HarvestedSucessfully)
+		if err != nil {
+			service.Log.Error("CaptureService.listenForResults failed to update SeedState", "error", err.Error())
+			break
+		}
+	}
+	service.Log.Info("CaptureService.listenForResults context is done", "error", ctx.Err().Error())
 }
