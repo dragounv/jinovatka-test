@@ -1,6 +1,7 @@
 package group
 
 import (
+	"errors"
 	"jinovatka/assert"
 	"jinovatka/server/handlers/httperror"
 	"jinovatka/services"
@@ -40,6 +41,11 @@ func (handler *SaveGroupHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	seedURL := r.FormValue(urlKey)
 	group, err := handler.SeedService.Save(seedURL, true)
 	// TODO: Return different error pages/messages when different errors are recived. This should help user understant what they did wrong.
+	if errors.Is(err, services.ErrEmptyList) {
+		handler.Log.Warn("SaveGroupHandler.ServeHTTP recieved empty seed list", utils.LogRequestInfo(r))
+		handler.ErrorHandler.ServeError(w, r, "Prázdný požadavek", 400, "Prázdný požadavek", "Požadavek který jsme obdrželi obsahoval jen prázdné řádky. Prosím vraťe se na hlavní stránku a zadejte platnou URL adresu.")
+		return
+	}
 	if err != nil {
 		handler.Log.Error("SaveGroupHandler.ServeHTTP SeedService returned error when trying to save group", slog.String("error", err.Error()), utils.LogRequestInfo(r))
 		handler.ErrorHandler.InternalServerError(w, r)

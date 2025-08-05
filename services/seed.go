@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+var ErrEmptyList = errors.New("list was empty")
+
 func NewSeedService(
 	log *slog.Logger,
 	repository storage.SeedRepository,
@@ -124,6 +126,10 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 			ShadowID: shadow,
 		}
 		seeds = append(seeds, seed)
+	}
+
+	if len(seeds) == 0 {
+		return nil, ErrEmptyList
 	}
 
 	var err error
