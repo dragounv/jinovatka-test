@@ -89,6 +89,7 @@ function printScoopSettings(settings) {
  */
 async function run(captureSettings, config) {
   // Initialize valkey client
+  // TODO: Pass config to Valkey
   const valkey = new Valkey();
 
   // Run forever and handle requests
