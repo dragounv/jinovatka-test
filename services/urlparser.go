@@ -1,4 +1,4 @@
-package utils
+package services
 
 import (
 	"errors"
@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// TODO: This should be made into service!
+type UrlParserService struct{}
 
 // This variables can be used to test what the returned error represents and customize user facing message.
 // This might need a refactor (as it looks ugly).
@@ -33,7 +33,7 @@ var (
 //
 // This function does not check the uri lenght.
 // It also does not check if the resource itself is malicious or NSFW.
-func ParseAndCleanURL(uri string, strict bool) (*url.URL, error) {
+func (service *UrlParserService) ParseAndCleanURL(uri string, strict bool) (*url.URL, error) {
 	const (
 		http  = "http"
 		https = "https"

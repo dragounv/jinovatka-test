@@ -7,18 +7,23 @@ import (
 	"jinovatka/assert"
 	"jinovatka/entities"
 	"jinovatka/storage"
-	"jinovatka/utils"
 	"log/slog"
 	"strings"
 	"time"
 )
 
-func NewSeedService(log *slog.Logger, repository storage.SeedRepository, maxInputListLineLength, maxInputListLines int) *SeedService {
+func NewSeedService(
+	log *slog.Logger,
+	repository storage.SeedRepository,
+	maxInputListLineLength,
+	maxInputListLines int,
+) *SeedService {
 	assert.Must(log != nil, "NewSeedService: log can't be nil")
 	assert.Must(repository != nil, "NewSeedService: repository can't be nil")
 	return &SeedService{
 		Log:                    log,
 		Repository:             repository,
+		UrlParser:              new(UrlParserService),
 		MaxInputListLineLength: maxInputListLineLength,
 		MaxInputListLines:      maxInputListLines,
 	}
@@ -27,6 +32,9 @@ func NewSeedService(log *slog.Logger, repository storage.SeedRepository, maxInpu
 type SeedService struct {
 	Log        *slog.Logger
 	Repository storage.SeedRepository
+
+	UrlParser *UrlParserService
+
 	// Maximum length of seed URL adress
 	MaxInputListLineLength int
 	// Maximum number of lines (seeds) that can be parsed in one call
@@ -99,7 +107,7 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 	}
 	seeds := make([]*entities.Seed, 0, len(lines))
 	for _, url := range lines {
-		url, err := utils.ParseAndCleanURL(url, false)
+		url, err := service.UrlParser.ParseAndCleanURL(url, false)
 		if err != nil {
 			// TODO: Log this in some smart way.
 			return nil, fmt.Errorf("SeedService.SaveList failed to parse URL: %w", err)
