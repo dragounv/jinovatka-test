@@ -73,7 +73,7 @@ func groupView(data *GroupViewData) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex-content-column\"><h2>Přehled stavu semínek</h2><table><thead><tr><th>URL</th><th>ID</th><th>Stav</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex-content-column\"><h2>Přehled stavu semínek</h2><table id=\"group-info-table\"><thead><tr><th>URL</th><th>ID</th><th>Stav</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -150,14 +150,14 @@ func groupView(data *GroupViewData) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</tbody></table><div class=\"flex-row\"><form method=\"get\" action=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</tbody><tfoot><tr><td><button type=\"button\" id=\"copy-urls\">Kopírovat adresy</button></td><td><button type=\"button\" id=\"copy-ids\">Kopírovat adresy</button></td><td></td></tr></tfoot></table><script>\n\t\tdocument.getElementById(\"copy-urls\").addEventListener(\"click\", copyColumn);\n\t\tdocument.getElementById(\"copy-ids\").addEventListener(\"click\", copyColumn);\n\t\tfunction copyColumn(e) {\n\t\t\tlet targetColumn;\n\t\t\tif (this.id === \"copy-urls\") {\n\t\t\t\ttargetColumn = 1;\n\t\t\t} else if (this.id === \"copy-ids\") {\n\t\t\t\ttargetColumn = 2;\n\t\t\t} else {\n\t\t\t\tconsole.error(\"copyColumn was called on wrong element!\");\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tconst dataCells = Array.from(document.querySelectorAll(`#group-info-table > tbody > tr > td:nth-of-type(${targetColumn}) > a`));\n\t\t\tconst baseURL = window.location.href.origin;\n\t\t\tconst columnData = dataCells.reduce((accumulator, currentValue) => accumulator + \"\\n\" + new URL(currentValue.href, baseURL).toString());\n\t\t\tconst result = navigator.clipboard.writeText(columnData)\n\t\t\tresult.catch((reason) => console.error(reason));\n\t\t\tresult.then(() => {\n\t\t\t\tconst tmp = this.textContent;\n\t\t\t\tthis.textContent = \"Zkopírováno\";\n\t\t\t\tsetTimeout(() => this.textContent = tmp, 1000)\n\t\t\t})\n\t\t}\n\t</script><div class=\"flex-row\"><form method=\"get\" action=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 templ.SafeURL
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs("/seeds/export/" + data.Group.ShadowID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `server/components/group.templ`, Line: 52, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `server/components/group.templ`, Line: 84, Col: 68}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {

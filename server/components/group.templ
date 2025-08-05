@@ -26,7 +26,7 @@ templ groupHeader() {
 templ groupView(data *GroupViewData) {
 <div class="flex-content-column">
 	<h2>Přehled stavu semínek</h2>
-	<table>
+	<table id="group-info-table">
 		<thead>
 			<tr>
 				<th>URL</th>
@@ -47,7 +47,39 @@ templ groupView(data *GroupViewData) {
 			</tr>
 		}
 		</tbody>
+		<tfoot>
+			<tr>
+				<td><button type="button" id="copy-urls">Kopírovat adresy</button></td>
+				<td><button type="button" id="copy-ids">Kopírovat adresy</button></td>
+				<td></td>
+			</tr>
+		</tfoot>
 	</table>
+	<script>
+		document.getElementById("copy-urls").addEventListener("click", copyColumn);
+		document.getElementById("copy-ids").addEventListener("click", copyColumn);
+		function copyColumn(e) {
+			let targetColumn;
+			if (this.id === "copy-urls") {
+				targetColumn = 1;
+			} else if (this.id === "copy-ids") {
+				targetColumn = 2;
+			} else {
+				console.error("copyColumn was called on wrong element!");
+				return;
+			}
+			const dataCells = Array.from(document.querySelectorAll(`#group-info-table > tbody > tr > td:nth-of-type(${targetColumn}) > a`));
+			const baseURL = window.location.href.origin;
+			const columnData = dataCells.reduce((accumulator, currentValue) => accumulator + "\n" + new URL(currentValue.href, baseURL).toString());
+			const result = navigator.clipboard.writeText(columnData)
+			result.catch((reason) => console.error(reason));
+			result.then(() => {
+				const tmp = this.textContent;
+				this.textContent = "Zkopírováno";
+				setTimeout(() => this.textContent = tmp, 1000)
+			})
+		}
+	</script>
 	<div class="flex-row">
 		<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
 			<button type="submit">Exportovat do XLSX</button>
