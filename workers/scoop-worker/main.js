@@ -84,6 +84,7 @@ function printScoopSettings(settings) {
 /**
  * This function starts listening for requests in the valkey database.
  * When request is recieved it will capture the requested page.
+ *
  * @param {ScoopOptions} captureSettings
  * @param {WorkerConfig} config
  */
@@ -94,13 +95,27 @@ async function run(captureSettings, config) {
 
   // Run forever and handle requests
   while (true) {
-    const request = await fetchRequest(valkey);
+    let request;
+    try {
+      request = await fetchRequest(valkey);
+    } catch (err) {
+      console.error("Fetch error: " + err.message);
+      continue; // Don't fail. continue to another request.
+    }
+
     console.log("Recieved request ---");
     console.log(request.SeedURL);
     console.log(request.SeedShadowID);
     console.log(request.Status);
     console.log("--------------------");
-    await captureRequest(request, captureSettings, config);
+
+    try {
+      await captureRequest(request, captureSettings, config);
+    } catch (err) {
+      console.error("Capture error: " + err.message);
+      continue;
+    }
+
     /** @type { CaptureResult } */
     const response = {
       SeedShadowID: request.SeedShadowID,
@@ -137,6 +152,9 @@ async function fetchRequest(valkey) {
  */
 async function captureRequest(request, captureSettings, config) {
   const capture = await Scoop.capture(request.SeedURL, captureSettings);
+  if (capture.state === Scoop.states.FAILED) {
+    throw new Error("Capture failed. The URL may not exist.");
+  }
   // @ts-ignore Typescript type checker is very unhappy about this. The definition and jsdoc annotation for this function needs some love.
   const wacz = await capture.toWACZ(false);
   const filename = request.SeedShadowID + ".wacz";
