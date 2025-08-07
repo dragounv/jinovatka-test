@@ -7,7 +7,7 @@ type CaptureRequest struct {
 	// The ShadowID of Seed we want to capture. This will be used in CaptureResult.
 	SeedShadowID string
 	// The status of the request.
-	Status CaptureStatus
+	Status CaptureState
 }
 
 func NewRequestFromSeed(seed *Seed) *CaptureRequest {
@@ -18,22 +18,24 @@ func NewRequestFromSeed(seed *Seed) *CaptureRequest {
 	}
 }
 
-type CaptureResult struct {
-	// ShadowID of the seed to which the result belongs to.
-	SeedShadowID string
-	// Status of the result.
-	Status CaptureStatus
-}
-
-type CaptureStatus string
+type CaptureState string
 
 const (
 	// The request is newly created and is not enqueued.
-	NewRequest CaptureStatus = "NewRequest"
+	NewRequest CaptureState = "NewRequest"
 	// The request was enqueued for processing.
-	Pending CaptureStatus = "Pending"
+	Pending CaptureState = "Pending"
 	// The capture was successful.
-	DoneSuccess CaptureStatus = "DoneSuccess"
+	DoneSuccess CaptureState = "DoneSuccess"
 	// The capture failed.
-	DoneFailure CaptureStatus = "DoneFailure"
+	DoneFailure CaptureState = "DoneFailure"
 )
+
+type CaptureResult struct {
+	// ShadowID of the seed to which the result belongs to.
+	SeedShadowID string
+	// Was the capture completed
+	Done bool
+	// Recieved errors
+	ErrorMessages []string
+}

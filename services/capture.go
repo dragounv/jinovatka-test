@@ -72,7 +72,7 @@ func (service *CaptureService) listenForResults(ctx context.Context) {
 			service.Log.Error("CaptureService.listenForResults failed to AwaitResult", "error", err.Error())
 			break
 		}
-		service.Log.Info("Got result", "shadowID", result.SeedShadowID, "status", result.Status)
+		service.Log.Info("Got result", "shadowID", result.SeedShadowID, "status", result.Done, "errors", result.ErrorMessages)
 
 		// Update state of seed
 		// TODO: I need to completely rework SeedState

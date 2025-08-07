@@ -95,33 +95,36 @@ async function run(captureSettings, config) {
 
   // Run forever and handle requests
   while (true) {
+    /** @type { CaptureResult } */
+    const result = {
+      SeedShadowID: "",
+      Done: false,
+      ErrorMessages: [],
+    };
+
     let request;
     try {
       request = await fetchRequest(valkey);
     } catch (err) {
       console.error("Fetch error: " + err.message);
+      console.log(request);
       continue; // Don't fail. continue to another request.
     }
 
-    console.log("Recieved request ---");
-    console.log(request.SeedURL);
-    console.log(request.SeedShadowID);
-    console.log(request.Status);
-    console.log("--------------------");
+    console.log(request);
+    result.SeedShadowID = request.SeedShadowID;
 
     try {
       await captureRequest(request, captureSettings, config);
     } catch (err) {
       console.error("Capture error: " + err.message);
+      console.log(request);
       continue;
     }
 
-    /** @type { CaptureResult } */
-    const response = {
-      SeedShadowID: request.SeedShadowID,
-      Status: "DoneSuccess",
-    };
-    await enqueueResult(valkey, response);
+    result.Done;
+
+    await enqueueResult(valkey, result);
   }
 }
 
@@ -176,7 +179,11 @@ async function enqueueResult(valkey, result) {
  * @typedef { object } CaptureRequest
  * @property { string } SeedURL
  * @property { string } SeedShadowID
- * @property { CaptureStatus } Status
+ * @property { RequestState } Status
+ */
+
+/**
+ * @typedef {("NewRequest" | "Pending" | "DoneSuccess" | "DoneFailure")} RequestState
  */
 
 /**
@@ -189,12 +196,10 @@ async function enqueueResult(valkey, result) {
 /**
  * @typedef { object } CaptureResult
  * @property { string } SeedShadowID
- * @property { CaptureStatus } Status
+ * @property {boolean} Done
+ * @property {string[]} ErrorMessages
  */
 
-/**
- * @typedef {("NewRequest" | "Pending" | "DoneSuccess" | "DoneFailure")} CaptureStatus
- */
 // ------------------------
 
 await main();
