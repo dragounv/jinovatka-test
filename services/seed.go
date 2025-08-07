@@ -71,7 +71,7 @@ func (service *SeedService) SaveSeed(seedURL string) error {
 	seed := &entities.Seed{
 		URL:      seedURL,
 		Public:   true,
-		State:    entities.NotHarvested,
+		State:    entities.NotEnqueued,
 		ShadowID: shadow,
 	}
 
@@ -122,7 +122,7 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 		seed := &entities.Seed{
 			URL:      url.String(),
 			Public:   true,
-			State:    entities.NotHarvested,
+			State:    entities.NotEnqueued,
 			ShadowID: shadow,
 		}
 		seeds = append(seeds, seed)
@@ -156,6 +156,9 @@ func (service *SeedService) GetSeed(shadow string) (*entities.Seed, error) {
 	return service.Repository.GetSeed(shadow)
 }
 
-func (service *SeedService) UpdateStatus(shadow string, status entities.SeedState) error {
-	return service.Repository.UpdateStatus(shadow, status)
+func (service *SeedService) UpdateState(shadow string, state entities.CaptureState) error {
+	if !state.IsCaptureState() {
+		return errors.New("SeedService.UpdateState received invalid state argument")
+	}
+	return service.Repository.UpdateState(shadow, state)
 }

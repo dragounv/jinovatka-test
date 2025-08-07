@@ -42,7 +42,7 @@ func (service ExporterService) GroupToExcel(group *entities.SeedsGroup, w io.Wri
 		fmt.Println("string:", detailLink.String(), "host:", detailLink.Host, "path:", detailLink.Path)
 
 		state := "Nesklizeno"
-		if seed.State == entities.HarvestedSucessfully {
+		if seed.State == entities.DoneSuccess {
 			state = "Sklizeno"
 		}
 		row := []any{

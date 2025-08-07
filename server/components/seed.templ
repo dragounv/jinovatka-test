@@ -43,19 +43,19 @@ templ seedView(data *SeedViewData) {
 			</tr>
 			<tr>
 				<td>Stav:</td>
-				if data.Seed.State == entities.HarvestedSucessfully {
+				if data.Seed.State == entities.DoneSuccess {
 					<td>Sklizeno</td>
 				} else {
 					<td>Nesklizeno</td>
 				}
 				// TODO: Add other messages for cases where there was error during crawl.
 			</tr>
-			if data.Seed.State == entities.HarvestedSucessfully {
+			if data.Seed.State == entities.DoneSuccess {
 				
 			}
 				<tr>
 					<td>Archivní odkaz:</td>
-					if data.Seed.State == entities.HarvestedSucessfully {
+					if data.Seed.State == entities.DoneSuccess {
 						<td><a href={ data.Seed.ArchivalURL }>{ data.Seed.ArchivalURL }</a></td>
 						// TODO: This should be link. There should also be a copy button.
 					} else {
@@ -65,7 +65,7 @@ templ seedView(data *SeedViewData) {
 				</tr>
 				<tr>
 					<td>Datum sklizně:</td>
-					if data.Seed.State == entities.HarvestedSucessfully {
+					if data.Seed.State == entities.DoneSuccess {
 						<td>{ data.Seed.HarvestedAt.String() }</td>
 						// TODO: Use custom format sring for the time.Time.
 					} else {

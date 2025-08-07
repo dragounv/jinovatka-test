@@ -14,7 +14,7 @@ func NewRequestFromSeed(seed *Seed) *CaptureRequest {
 	return &CaptureRequest{
 		SeedURL:      seed.URL,
 		SeedShadowID: seed.ShadowID,
-		State:        NewRequest,
+		State:        NotEnqueued,
 	}
 }
 
@@ -22,7 +22,7 @@ type CaptureState string
 
 const (
 	// The request is newly created and is not enqueued.
-	NewRequest CaptureState = "NewRequest"
+	NotEnqueued CaptureState = "NotEnqueued"
 	// The request was enqueued for processing.
 	Pending CaptureState = "Pending"
 	// The capture was successful.
@@ -30,6 +30,13 @@ const (
 	// The capture failed.
 	DoneFailure CaptureState = "DoneFailure"
 )
+
+func (state CaptureState) IsCaptureState() bool {
+	return state == NotEnqueued ||
+		state == Pending ||
+		state == DoneSuccess ||
+		state == DoneFailure
+}
 
 type CaptureResult struct {
 	// ShadowID of the seed to which the result belongs to.

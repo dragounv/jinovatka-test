@@ -44,17 +44,14 @@ type Seed struct {
 
 // Function that creates new seed records that can be inserted into DB.
 // It asserts that all necessary values are present to prevent incomplete records.
-// It is possble to insert seed that alredy has HarvestedAt and ArchivalUrl, but it's state can't be NotHarvested.
 func NewSeedRecord(seed *entities.Seed) *Seed {
 	assert.Must(seed != nil, "NewSeedRecord: seed can't be nil")
 	assert.Must(seed.URL != "", "NewSeedRecord: seed.URL can't be empty string")
 	assert.Must(seed.ShadowID != "", "NewSeedRecord: seed.ShadowID can't be empty string")
-	assert.Must(entities.IsValidSeedState(string(seed.State)), "NewSeedRecord: seed.State must be initialized and valid")
-	// If we are creating seed that is not yet harvested, then it can't have harvest metadata.
-	if seed.State == entities.NotHarvested {
-		assert.Must(seed.HarvestedAt.IsZero(), "NewSeedRecord: seed.HarvestedAt must be zero time value")
-		assert.Must(seed.ArchivalURL == "", "NewSeedRecord: seed.ArchivalURL must be empty string")
-	}
+	assert.Must(seed.State == entities.NotEnqueued, "NewSeedRecord: seed.State can't be empty and must be entities.NotEnqueued")
+	// We are creating seed that is not yet harvested, so it can't have harvest metadata.
+	assert.Must(seed.HarvestedAt.IsZero(), "NewSeedRecord: seed.HarvestedAt must be zero time value")
+	assert.Must(seed.ArchivalURL == "", "NewSeedRecord: seed.ArchivalURL must be empty string")
 
 	// Ignore ID, Create, Update adn Delete time. We are creating new record. GORM will fill it in.
 	seedRecord := &Seed{
@@ -82,7 +79,7 @@ func (seed *Seed) ToEntity() *entities.Seed {
 	entity := &entities.Seed{
 		URL:      seed.URL,
 		Public:   seed.Public,
-		State:    entities.SeedState(seed.State),
+		State:    entities.CaptureState(seed.State),
 		ShadowID: seed.ShadowID,
 	}
 	if seed.ArchivalURL.Valid {
@@ -208,8 +205,8 @@ func (repository *SeedRepository) GetSeed(shadow string) (*entities.Seed, error)
 	return seed, nil
 }
 
-func (repository *SeedRepository) UpdateStatus(shadow string, status entities.SeedState) error {
-	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("state").Updates(Seed{State: string(status)}).Error
+func (repository *SeedRepository) UpdateState(shadow string, state entities.CaptureState) error {
+	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("state").Updates(Seed{State: string(state)}).Error
 	if err != nil {
 		return fmt.Errorf("SeedRepository.UpdateStatus failed to update Seed with shadow %s :%w", shadow, err)
 	}

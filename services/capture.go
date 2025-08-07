@@ -75,9 +75,16 @@ func (service *CaptureService) listenForResults(ctx context.Context) {
 		service.Log.Info("Got result", "shadowID", result.SeedShadowID, "done", result.Done, "errors", result.ErrorMessages)
 
 		// Update state of seed
-		// TODO: I need to completely rework SeedState
-		// This is dummy code for now
-		err = service.SeedService.UpdateStatus(result.SeedShadowID, entities.HarvestedSucessfully)
+		var state entities.CaptureState
+		if result.Done && len(result.ErrorMessages) == 0 {
+			state = entities.DoneSuccess
+		} else if result.Done {
+			state = entities.DoneFailure
+		} else {
+			// TODO add another option
+			state = entities.NotEnqueued
+		}
+		err = service.SeedService.UpdateState(result.SeedShadowID, state)
 		if err != nil {
 			service.Log.Error("CaptureService.listenForResults failed to update SeedState", "error", err.Error())
 			break

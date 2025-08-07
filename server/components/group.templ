@@ -52,7 +52,7 @@ templ groupView(data *GroupViewData) {
 			<tr>
 				<td><a href={ seed.URL }>{ seed.URL }</a></td>
 				<td><a href={ "/seed/" + seed.ShadowID }>{ seed.ShadowID }</a></td>
-					if seed.State == entities.HarvestedSucessfully {
+					if seed.State == entities.DoneSuccess {
 						<td>Úspěšně sklizeno</td>
 					} else {
 						<td>Nesklizeno</td>

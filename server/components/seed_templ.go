@@ -119,7 +119,7 @@ func seedView(data *SeedViewData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.Seed.State == entities.HarvestedSucessfully {
+		if data.Seed.State == entities.DoneSuccess {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<td>Sklizeno</td>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -134,13 +134,13 @@ func seedView(data *SeedViewData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.Seed.State == entities.HarvestedSucessfully {
+		if data.Seed.State == entities.DoneSuccess {
 		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<tr><td>Archivní odkaz:</td>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.Seed.State == entities.HarvestedSucessfully {
+		if data.Seed.State == entities.DoneSuccess {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<td><a href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -181,7 +181,7 @@ func seedView(data *SeedViewData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if data.Seed.State == entities.HarvestedSucessfully {
+		if data.Seed.State == entities.DoneSuccess {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "<td>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
