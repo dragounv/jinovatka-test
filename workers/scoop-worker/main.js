@@ -95,6 +95,14 @@ async function run(captureSettings, config) {
 
   // Run forever and handle requests
   while (true) {
+    let request;
+    try {
+      request = await fetchRequest(valkey);
+    } catch (err) {
+      console.error("Fetch error: " + err.message);
+      continue; // Don't fail. continue to another request.
+    }
+
     /** @type { CaptureResult } */
     const result = {
       seedShadowID: "",
@@ -102,24 +110,16 @@ async function run(captureSettings, config) {
       errorMessages: [],
     };
 
-    let request;
-    try {
-      request = await fetchRequest(valkey);
-    } catch (err) {
-      console.error("Fetch error: " + err.message);
-      console.log(request);
-      continue; // Don't fail. continue to another request.
-    }
-
     console.log(request);
     result.seedShadowID = request.seedShadowID;
 
     try {
       await captureRequest(request, captureSettings, config);
     } catch (err) {
-      console.error("Capture error: " + err.message);
+      const errorMsg = "Capture error: " + err.message;
+      console.error(errorMsg);
       console.log(request);
-      continue;
+      result.errorMessages.push(errorMsg);
     }
 
     result.done = true;
