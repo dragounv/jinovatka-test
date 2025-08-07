@@ -36,13 +36,13 @@ const (
 
 func (queue *Queue) Enqueue(ctx context.Context, request *entities.CaptureRequest) error {
 	if request == nil {
-		return errors.New("Queue.Enqueue recived nil request")
+		return errors.New("Queue.Enqueue recieved nil request")
 	}
 	if request.SeedShadowID == "" {
-		return errors.New("Queue.Enqueue recived request with no SeedShadowID")
+		return errors.New("Queue.Enqueue recieved request with no SeedShadowID")
 	}
 	if request.SeedURL == "" {
-		return errors.New("Queue.Enqueue recived request with no SeedURL")
+		return errors.New("Queue.Enqueue recieved request with no SeedURL")
 	}
 	// TODO: Maybe create model struct for this?
 	requestData, err := json.Marshal(request)
