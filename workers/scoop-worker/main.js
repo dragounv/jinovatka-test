@@ -97,9 +97,9 @@ async function run(captureSettings, config) {
   while (true) {
     /** @type { CaptureResult } */
     const result = {
-      SeedShadowID: "",
-      Done: false,
-      ErrorMessages: [],
+      seedShadowID: "",
+      done: false,
+      errorMessages: [],
     };
 
     let request;
@@ -112,7 +112,7 @@ async function run(captureSettings, config) {
     }
 
     console.log(request);
-    result.SeedShadowID = request.SeedShadowID;
+    result.seedShadowID = request.seedShadowID;
 
     try {
       await captureRequest(request, captureSettings, config);
@@ -122,7 +122,7 @@ async function run(captureSettings, config) {
       continue;
     }
 
-    result.Done;
+    result.done = true;
 
     await enqueueResult(valkey, result);
   }
@@ -154,13 +154,13 @@ async function fetchRequest(valkey) {
  * @param { WorkerConfig } config
  */
 async function captureRequest(request, captureSettings, config) {
-  const capture = await Scoop.capture(request.SeedURL, captureSettings);
+  const capture = await Scoop.capture(request.seedURL, captureSettings);
   if (capture.state === Scoop.states.FAILED) {
     throw new Error("Capture failed. The URL may not exist.");
   }
   // @ts-ignore Typescript type checker is very unhappy about this. The definition and jsdoc annotation for this function needs some love.
   const wacz = await capture.toWACZ(false);
-  const filename = request.SeedShadowID + ".wacz";
+  const filename = request.seedShadowID + ".wacz";
   await fs.writeFile(path.join(config.outputDir, filename), Buffer.from(wacz));
 }
 
@@ -177,9 +177,9 @@ async function enqueueResult(valkey, result) {
 // --- Type definitions ---
 /**
  * @typedef { object } CaptureRequest
- * @property { string } SeedURL
- * @property { string } SeedShadowID
- * @property { RequestState } Status
+ * @property { string } seedURL
+ * @property { string } seedShadowID
+ * @property { RequestState } state
  */
 
 /**
@@ -195,9 +195,9 @@ async function enqueueResult(valkey, result) {
 
 /**
  * @typedef { object } CaptureResult
- * @property { string } SeedShadowID
- * @property {boolean} Done
- * @property {string[]} ErrorMessages
+ * @property { string } seedShadowID
+ * @property {boolean} done
+ * @property {string[]} errorMessages
  */
 
 // ------------------------

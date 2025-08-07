@@ -3,18 +3,18 @@ package entities
 // Information necessary for capturing/crawling a page.
 type CaptureRequest struct {
 	// The URL adress we want to capture.
-	SeedURL string
+	SeedURL string `json:"seedURL"`
 	// The ShadowID of Seed we want to capture. This will be used in CaptureResult.
-	SeedShadowID string
+	SeedShadowID string `json:"seedShadowID"`
 	// The status of the request.
-	Status CaptureState
+	State CaptureState `json:"state"`
 }
 
 func NewRequestFromSeed(seed *Seed) *CaptureRequest {
 	return &CaptureRequest{
 		SeedURL:      seed.URL,
 		SeedShadowID: seed.ShadowID,
-		Status:       NewRequest,
+		State:        NewRequest,
 	}
 }
 
@@ -33,9 +33,9 @@ const (
 
 type CaptureResult struct {
 	// ShadowID of the seed to which the result belongs to.
-	SeedShadowID string
+	SeedShadowID string `json:"seedShadowID"`
 	// Was the capture completed
-	Done bool
+	Done bool `json:"done"`
 	// Recieved errors
-	ErrorMessages []string
+	ErrorMessages []string `json:"errorMessages"`
 }
