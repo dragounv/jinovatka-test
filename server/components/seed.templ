@@ -43,11 +43,7 @@ templ seedView(data *SeedViewData) {
 			</tr>
 			<tr>
 				<td>Stav:</td>
-				if data.Seed.State == entities.DoneSuccess {
-					<td>Sklizeno</td>
-				} else {
-					<td>Nesklizeno</td>
-				}
+				<td>{ prettyPrintCaptureState(data.Seed.State) }</td>
 				// TODO: Add other messages for cases where there was error during crawl.
 			</tr>
 			if data.Seed.State == entities.DoneSuccess {
