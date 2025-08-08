@@ -35,6 +35,10 @@ func (service *CaptureService) CaptureGroup(ctx context.Context, group *entities
 			// TODO: Maybe wrap this error
 			return err
 		}
+		err = service.SeedService.UpdateState(seed.ShadowID, entities.Pending)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
