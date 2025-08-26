@@ -93,6 +93,13 @@ func (service *CaptureService) listenForResults(ctx context.Context) {
 			service.Log.Error("CaptureService.listenForResults failed to update SeedState", "error", err.Error())
 			break
 		}
+		// Update seed metadata
+		if result.CaptureMetadata != nil {
+			err = service.SeedService.UpdateMetadata(result.SeedShadowID, result.CaptureMetadata)
+			if err != nil {
+				service.Log.Error("CaptureService.listenForResults failed to update seed metadata", "error", err.Error())
+			}
+		}
 	}
 	service.Log.Info("CaptureService.listenForResults context is done", "error", ctx.Err().Error())
 }

@@ -206,9 +206,21 @@ func (repository *SeedRepository) GetSeed(shadow string) (*entities.Seed, error)
 }
 
 func (repository *SeedRepository) UpdateState(shadow string, state entities.CaptureState) error {
-	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("state").Updates(Seed{State: string(state)}).Error
+	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("State").Updates(Seed{State: string(state)}).Error
 	if err != nil {
-		return fmt.Errorf("SeedRepository.UpdateStatus failed to update Seed with shadow %s :%w", shadow, err)
+		return fmt.Errorf("SeedRepository.UpdateStatus failed to update Seed with shadow %s : %w", shadow, err)
+	}
+	return nil
+}
+
+func (repository *SeedRepository) UpdateMetadata(shadow string, archivalURL string, harvestedAt time.Time) error {
+	seed := Seed{
+		ArchivalURL: sql.NullString{Valid: true, String: archivalURL},
+		HarvestedAt: sql.NullTime{Valid: true, Time: harvestedAt},
+	}
+	err := repository.DB.Model(Seed{}).Where("shadow_id = ?", shadow).Select("ArchivalURL", "HarvestedAt").Updates(seed).Error
+	if err != nil {
+		return fmt.Errorf("SeedRepository.UpdateMetadata failed to update Seed with shadow %s : %w", shadow, err)
 	}
 	return nil
 }

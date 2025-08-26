@@ -3,6 +3,7 @@ import Valkey from "iovalkey";
 import fs from "fs/promises";
 import "process";
 import path from "path";
+import JSZip from "jszip";
 
 // Global constants
 const requestQueueKey = "queue:requests";
@@ -29,6 +30,7 @@ async function main() {
   // Call the command
   switch (args[0]) {
     case "run": {
+      console.log("Starting worker");
       await run(captureSettings, config); // This call might never return.
       break;
     }
@@ -95,6 +97,7 @@ async function run(captureSettings, config) {
 
   // Run forever and handle requests
   while (true) {
+    // Fetch step
     let request;
     try {
       request = await fetchRequest(valkey);
@@ -103,18 +106,21 @@ async function run(captureSettings, config) {
       continue; // Don't fail. continue to another request.
     }
 
-    /** @type { CaptureResult } */
+    /** @type {CaptureResult} */
     const result = {
       seedShadowID: "",
       done: false,
       errorMessages: [],
+      captureMetadata: null,
     };
 
     console.log(request);
     result.seedShadowID = request.seedShadowID;
 
+    // Capture step
+    let wacz;
     try {
-      await captureRequest(request, captureSettings, config);
+      wacz = await captureRequest(request, captureSettings, config);
     } catch (err) {
       const errorMsg = "Capture error: " + err.message;
       console.error(errorMsg);
@@ -122,6 +128,33 @@ async function run(captureSettings, config) {
       result.errorMessages.push(errorMsg);
     }
 
+    // If there was error during capture then skip writing and extraction
+    if (wacz !== undefined) {
+      // Write step
+      const waczPath = path.join(
+        config.outputDir,
+        request.seedShadowID + ".wacz"
+      );
+      try {
+        await fs.writeFile(waczPath, Buffer.from(wacz));
+      } catch (err) {
+        const errorMsg = `failed to write file ${waczPath}, got error: ${err.message}`;
+        console.error(errorMsg);
+        console.log(request);
+        result.errorMessages.push(errorMsg);
+      }
+
+      // Extract step
+      try {
+        result.captureMetadata = await extractMetadata(wacz);
+      } catch (err) {
+        const errorMsg = `failed to extract capture metadata: ${err.message}`;
+        console.error(errorMsg);
+        result.errorMessages.push(errorMsg);
+      }
+    }
+
+    // result.done should be set only after we created the capture and saved it
     result.done = true;
 
     await enqueueResult(valkey, result);
@@ -152,6 +185,7 @@ async function fetchRequest(valkey) {
  * @param { CaptureRequest } request
  * @param { ScoopOptions } captureSettings
  * @param { WorkerConfig } config
+ * @returns {Promise<ArrayBuffer>}
  */
 async function captureRequest(request, captureSettings, config) {
   const capture = await Scoop.capture(request.seedURL, captureSettings);
@@ -159,9 +193,101 @@ async function captureRequest(request, captureSettings, config) {
     throw new Error("Capture failed. The URL may not exist.");
   }
   // @ts-ignore Typescript type checker is very unhappy about this. The definition and jsdoc annotation for this function needs some love.
-  const wacz = await capture.toWACZ(false);
-  const filename = request.seedShadowID + ".wacz";
-  await fs.writeFile(path.join(config.outputDir, filename), Buffer.from(wacz));
+  return await capture.toWACZ(false);
+}
+
+/**
+ * Extract metadata about capture from WACZ file
+ * @param {ArrayBuffer} wacz The capture WACZ data
+ * @returns {Promise<CaptureMetadata>}
+ */
+async function extractMetadata(wacz) {
+  const zip = new JSZip();
+  await zip.loadAsync(wacz);
+  const datapackage = await getDatapackage(zip);
+  const index = await getIndex(zip);
+  return new CaptureMetadata(datapackage, index);
+}
+
+/**
+ * @param {JSZip} zip
+ * @returns {Promise<any>}
+ */
+async function getDatapackage(zip) {
+  const datapackageZip = zip.file("datapackage.json");
+  if (datapackageZip === null) {
+    throw new Error("failed to open datapackage.json");
+  }
+  const dataPackageData = await datapackageZip.async("string");
+  return JSON.parse(dataPackageData);
+}
+
+/**
+ * @param {JSZip} zip
+ * @returns {Promise<string>}
+ */
+async function getIndex(zip) {
+  const indexPaths = ["indexes/index.cdx", "indexes/index.cdxj"];
+  let indexZip;
+  for (const path of indexPaths) {
+    indexZip = zip.file(path);
+    if (indexZip !== null) {
+      break;
+    }
+  }
+  if (indexZip === null || indexZip === undefined) {
+    throw new Error("failed to open index");
+  }
+  return await indexZip.async("string");
+}
+
+class CaptureMetadata {
+  /**
+   * @param {any} datapackage Deserialized object from datapackage.json
+   * @param {string} index CDXJ index in text form
+   */
+  constructor(datapackage, index) {
+    const mainPageRecord = CaptureMetadata.extractMainPageRecord(
+      datapackage,
+      index
+    );
+
+    this.timestamp = mainPageRecord.timestamp;
+    this.capturedUrl = mainPageRecord.jsonBlock.url;
+  }
+
+  /**
+   * @param {any} datapackage Deserialized object from datapackage.json
+   * @param {string} index CDXJ index in text form
+   * @returns {{surt: string, timestamp: string, jsonBlock: any}}
+   */
+  static extractMainPageRecord(datapackage, index) {
+    const mainPageUrl = datapackage.mainPageUrl;
+    const lines = index.split(/\r?\n|\r|\n/g);
+    let mainPageRecord;
+    for (let line of lines) {
+      line = line.trim();
+      if (line === "") {
+        continue;
+      }
+      const fields = line.split(" ");
+      const jsonField = fields.slice(2).join(" ");
+      const recordMetadata = JSON.parse(jsonField);
+      // console.log("MainPage:", mainPageUrl, "cdxj.url:", recordMetadata.url);
+      if (mainPageUrl === recordMetadata.url) {
+        mainPageRecord = {
+          surt: fields[0],
+          timestamp: fields[1],
+          jsonBlock: recordMetadata,
+        };
+        break;
+      }
+    }
+    if (mainPageRecord === undefined) {
+      throw new Error("no record matched mainPageUrl");
+    }
+    return mainPageRecord;
+  }
 }
 
 /**
@@ -198,6 +324,7 @@ async function enqueueResult(valkey, result) {
  * @property { string } seedShadowID
  * @property {boolean} done
  * @property {string[]} errorMessages
+ * @property {?CaptureMetadata} captureMetadata
  */
 
 // ------------------------

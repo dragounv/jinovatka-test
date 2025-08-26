@@ -45,4 +45,13 @@ type CaptureResult struct {
 	Done bool `json:"done"`
 	// Recieved errors
 	ErrorMessages []string `json:"errorMessages"`
+
+	CaptureMetadata *CaptureMetadata `json:"captureMetadata"`
+}
+
+type CaptureMetadata struct {
+	// CDXJ timestamp of the instatnt the capture was taken as recorded in index/WARC https://specs.webrecorder.net/cdxj/0.1.0/#timestamp
+	Timestamp string `json:"timestamp"`
+	// URL from CDXJ JSON block.
+	CapturedUrl string `json:"capturedUrl"`
 }

@@ -3,6 +3,7 @@ package storage
 import (
 	"jinovatka/assert"
 	"jinovatka/entities"
+	"time"
 )
 
 func NewRepository(seed SeedRepository) *Repository {
@@ -22,4 +23,5 @@ type SeedRepository interface {
 	GetGroup(shadow string) (*entities.SeedsGroup, error)
 	GetSeed(shadow string) (*entities.Seed, error)
 	UpdateState(shadow string, state entities.CaptureState) error
+	UpdateMetadata(shadow, archivalURL string, harvestedAt time.Time) error
 }

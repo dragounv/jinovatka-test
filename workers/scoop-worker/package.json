@@ -2,6 +2,7 @@
   "type": "module",
   "dependencies": {
     "@harvard-lil/scoop": "^0.6.58",
-    "iovalkey": "^0.3.3"
+    "iovalkey": "^0.3.3",
+    "jszip": "^3.10.1"
   }
 }

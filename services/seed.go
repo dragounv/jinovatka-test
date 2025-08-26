@@ -162,3 +162,35 @@ func (service *SeedService) UpdateState(shadow string, state entities.CaptureSta
 	}
 	return service.Repository.UpdateState(shadow, state)
 }
+
+func (service *SeedService) UpdateMetadata(shadow string, metadata *entities.CaptureMetadata) error {
+	// Check that timestamp is valid. It needs to be 14 (second precision) or 17 (nanosecond precision) chars long.
+	timestampLength := len(metadata.Timestamp)
+	if timestampLength != 14 && timestampLength != 17 {
+		return errors.New("SeedService.UpdateMetadata recieved CaptureMetadata with invalid timestamp length")
+	}
+
+	// Create archivalURL
+	// TODO: Move this to config
+	const waybackURL = "https://wayback.webarchiv.cz/wayback/"
+	// Intentinally left unescaped. Escaping the capturedUrl, while it may seem reasonable, will break compatibility with openwayback.
+	waybackPagePath := metadata.Timestamp + "/" + metadata.CapturedUrl
+	archivalURL := waybackURL + waybackPagePath
+
+	// If timestamp is the long version, then add decimal point before the fractional second part to allow parsing by time.Parse.
+	timestamp := metadata.Timestamp
+	if timestampLength == 17 {
+		timestamp = timestamp[:14] + "." + timestamp[14:]
+	}
+
+	service.Log.Info("Timestamp: " + timestamp)
+
+	// Parse timestamp into time.Time. This format covers both short and long variants as specifying fractional seconds part is optinal.
+	const format = "20060102150405"
+	archivedAt, err := time.Parse(format, timestamp)
+	if err != nil {
+		return fmt.Errorf("SeedService.UpdateMetadata failed to parse timestamp: %w", err)
+	}
+
+	return service.Repository.UpdateMetadata(shadow, archivalURL, archivedAt)
+}
