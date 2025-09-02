@@ -37,3 +37,11 @@ func ErrorView(data *ErrorViewData) templ.Component {
 		Main:   errorView(data),
 	})
 }
+
+func GeneratorView() templ.Component {
+	return Assemble(&PageComponents{
+		Title:  "Generátor citací",
+		Header: header("Generátor citací"),
+		Main:   generatorView(),
+	})
+}
