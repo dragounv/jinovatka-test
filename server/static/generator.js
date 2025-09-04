@@ -36,7 +36,8 @@
           throw new TypeError("inputData must be array of objects");
         }
         if (inputData.length !== 0) {
-          fillForm(generatorForm, inputData);
+          fillForm(generatorForm, inputData[0]);
+          enableFormControls(generatorForm, citationOutput, inputData);
         }
       } catch (err) {
         console.error(err);
@@ -55,17 +56,94 @@
   /**
    *
    * @param {HTMLFormElement} generatorForm
-   * @param {Array} inputData
+   * @param {HTMLElement} citationOutput
+   * @param {Array} citationData
+   */
+  function enableFormControls(generatorForm, citationOutput, citationData) {
+    const formControls = document.getElementById("form-controls");
+    if (formControls === null) {
+      throw new TypeError("Element with id 'form-controls' must exist");
+    }
+
+    formControls.hidden = false;
+    formControls.classList.remove("hidden");
+
+    let currentDataIndex = 0;
+    let dataCount = citationData.length;
+
+    const currentIndexElem = document.getElementById("cit-data-num");
+    const countElem = document.getElementById("cit-data-count");
+    if (currentIndexElem === null) {
+      throw new TypeError("Element with id 'cit-data-num' must exist");
+    }
+    if (countElem === null) {
+      throw new TypeError("Element with id 'cit-data-count' must exist");
+    }
+
+    // Show index bigger by one as that is what people generaly expect
+    currentIndexElem.textContent = (currentDataIndex + 1).toString();
+    countElem.textContent = dataCount.toString();
+
+    const prevBtn = document.getElementById("prev");
+    const nextBtn = document.getElementById("next");
+    if (prevBtn === null) {
+      throw new TypeError("Element with id 'prev' must exist");
+    }
+    if (nextBtn === null) {
+      throw new TypeError("Element with id 'next' must exist");
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (currentDataIndex <= 0) {
+        return;
+      }
+      saveCurrentCitationData(generatorForm, citationData, currentDataIndex);
+      currentDataIndex--;
+      currentIndexElem.textContent = (currentDataIndex + 1).toString();
+      fillForm(generatorForm, citationData[currentDataIndex]);
+      generateCitation(generatorForm, citationOutput);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (currentDataIndex >= dataCount - 1) {
+        return;
+      }
+      saveCurrentCitationData(generatorForm, citationData, currentDataIndex);
+      currentDataIndex++;
+      currentIndexElem.textContent = (currentDataIndex + 1).toString();
+      fillForm(generatorForm, citationData[currentDataIndex]);
+      generateCitation(generatorForm, citationOutput);
+    });
+  }
+
+  /**
+   *
+   * @param {HTMLFormElement} generatorForm
+   * @param {Array} citationData
+   * @param {number} currentIndex
+   */
+  function saveCurrentCitationData(generatorForm, citationData, currentIndex) {
+    const currentData = citationData[currentIndex];
+    for (const element of generatorForm.elements) {
+      if ("citationfield" in element.dataset) {
+        currentData[element.dataset.citationfield] = element.value;
+      }
+    }
+  }
+
+  /**
+   *
+   * @param {HTMLFormElement} generatorForm
+   * @param {any} inputData // Object containing citation field values
    */
   function fillForm(generatorForm, inputData) {
-    const firstCitationData = inputData[0];
-    for (const field in firstCitationData) {
+    for (const field in inputData) {
       const element = generatorForm.elements.namedItem(field);
       if (element === null) {
         console.warn(`Form element with id ${field} does not exist!`);
         continue;
       }
-      element.value = firstCitationData[field];
+      element.value = inputData[field];
     }
   }
 

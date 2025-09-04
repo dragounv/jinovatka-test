@@ -6,7 +6,7 @@ templ generatorView() {
 			<!-- Template -->
 			<div class="flex-row">
 				<label for="template">Vzor</label>
-				<input type="text" name="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url-webu}}. [cit. {{datum-citace}}]">
+				<input type="text" name="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
 			</div>
 			
 			<!-- Output -->
@@ -18,8 +18,9 @@ templ generatorView() {
 			<hr>
 
 			<!-- Controls -->
-			<div class="flex-row hidden">
+			<div class="flex-row hidden" id="form-controls" hidden>
 				<button type="button" id="prev">Předchozí</button>
+				<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
 				<button type="button" id="next">Další</button>
 			</div>
 
