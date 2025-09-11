@@ -5,7 +5,298 @@
     prepareCitationGenerator();
   }
 
-  function prepareTemplateBuilder() {}
+  // --- Template builder ---
+  // Builds template from user defined fields
+
+  // WeakMap holding custom properties and methods for field elements to avoid storing them in the HTMLElements themselfs
+  const fieldCustomData = new WeakMap();
+
+  function prepareTemplateBuilder() {
+    const templateBuilder = document.getElementById("builder");
+    if (templateBuilder === null) {
+      throw new Error("Element with id 'builder' must exist");
+    }
+    templateBuilder.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+    templateBuilder.addEventListener("drop", (e) =>
+      dropHanlder(e, templateBuilder)
+    );
+
+    const fieldTypeSelect = document.getElementById("field-type");
+    if (fieldTypeSelect === null) {
+      throw new Error("Element with id 'field-type' must exist");
+    }
+
+    const addFieldBtn = document.getElementById("add-field");
+    if (addFieldBtn === null) {
+      throw new Error("Element with id 'add-field' must exist");
+    }
+    let fieldNumber = 1;
+    addFieldBtn.addEventListener("click", () => {
+      addField(templateBuilder, fieldTypeSelect.value, fieldNumber);
+      fieldNumber++;
+    });
+
+    const removeAllFieldsBtn = document.getElementById("remove-all-fields");
+    if (removeAllFieldsBtn === null) {
+      throw new Error("Element with id 'remove-all-fields' must exist");
+    }
+    removeAllFieldsBtn.addEventListener(
+      "click",
+      () => (templateBuilder.innerHTML = "")
+    );
+
+    const templateInputElement = document.getElementById("template");
+    if (templateInputElement === null) {
+      throw new Error("Element with id 'template' must exist");
+    }
+    const buildTemplateBtn = document.getElementById("build-template");
+    if (buildTemplateBtn === null) {
+      throw new Error("Element with id 'build-template' must exist");
+    }
+    buildTemplateBtn.addEventListener("click", () => {
+      buildTemplate(templateBuilder, templateInputElement);
+      templateInputElement.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  /**
+   * @param {DragEvent} e
+   * @param {HTMLElement} templateBuilder
+   */
+  function dropHanlder(e, templateBuilder) {
+    e.preventDefault();
+    const fieldCount = templateBuilder.childElementCount;
+    if (fieldCount <= 1) {
+      // Only one field which must be the origin. Return early.
+      return;
+    }
+    const originID = e.dataTransfer.getData("text/plain");
+    const originField = document.getElementById(originID);
+    const currentY = e.clientY;
+    const fields = templateBuilder.children;
+    for (let i = 0; i < fieldCount; i++) {
+      const field = fields[i];
+      const rect = field.getBoundingClientRect();
+      if (currentY <= rect.y + rect.height / 2) {
+        field.insertAdjacentElement("beforebegin", originField);
+        return; // Done
+      }
+    }
+    // If nothing matched, put it at the end
+    templateBuilder.insertAdjacentElement("beforeend", originField);
+  }
+
+  /**
+   * @param {HTMLElement} target The element under which the new field will be added
+   * @param {string} type
+   * @param {number} fieldNumber
+   */
+  function addField(target, type, fieldNumber) {
+    const id = "field-" + fieldNumber;
+    let fieldInitFunc = null;
+    switch (type) {
+      case "text":
+        fieldInitFunc = initTextField;
+        break;
+      case "jméno":
+        fieldInitFunc = initNameField;
+        break;
+      case "příjmení":
+        fieldInitFunc = initLastnameField;
+        break;
+      default:
+        throw new Error(`unknown field type: ${type}`);
+    }
+    target.append(createNewField(type, id, fieldInitFunc));
+  }
+
+  /**
+   * @param {string} type
+   * @param {string} id
+   * @param {function(HTMLFormElement): void} initField
+   * @returns {HTMLFormElement}
+   */
+  function createNewField(type, id, initField) {
+    const field = document.createElement("form");
+    field.id = id;
+    field.classList.add("flex-row");
+    field.classList.add("field");
+
+    field.dataset.type = type;
+
+    // Add the field to the WeakMap so the "getTemplateValue" method can be safely stored
+    fieldCustomData.set(field, {});
+
+    initField(field);
+
+    const removeBtn = document.createElement("button");
+    removeBtn.append("Odebrat");
+    removeBtn.addEventListener("click", () => field.remove());
+    field.append(removeBtn);
+
+    field.draggable = true;
+    field.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", field.id);
+      e.dataTransfer.dropEffect = "move";
+    });
+
+    return field;
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initTextField(field) {
+    field.innerHTML = `
+      <span>Textové&nbsp;pole:</span>
+      <div class="flex-row max-flex">
+        <label class="flex-row max-flex"><input class="max-flex" type="text" name="f-value"></label>
+        ${fieldFormatFormControls}
+      </div>
+    `;
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      const text = field.elements.namedItem("f-value").value;
+      return wrapTextInFormat(text, field);
+    };
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initNameField(field) {
+    field.innerHTML =
+      `<span>Jméno autora:</span>` +
+      fieldFormatFormControls +
+      fieldCaseFormControls;
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      let expr = "jméno";
+      expr = setCase(expr, field);
+      expr = wrapExprInFormat(expr, field);
+      return `{{${expr}}}`;
+    };
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initLastnameField(field) {
+    field.innerHTML =
+      `<span>Příjmení autora:</span>` +
+      fieldFormatFormControls +
+      fieldCaseFormControls;
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      let expr = "příjmení";
+      expr = setCase(expr, field);
+      expr = wrapExprInFormat(expr, field);
+      return `{{${expr}}}`;
+    };
+  }
+
+  const fieldFormatFormControls = `
+  <span class="flex-row format-controls">
+    <label class="flex-row"><input type="checkbox" name="f-tučně">Tučně</label>
+    <label class="flex-row"><input type="checkbox" name="f-kurzíva">Kurzívou</label>
+  </span>
+  `;
+  /**
+   * Add formating to handlebars expression.
+   * @param {string} expr
+   * @param {HTMLFormElement} field
+   * @return {string}
+   */
+  function wrapExprInFormat(expr, field) {
+    if (field.elements.namedItem("f-tučně")?.checked) {
+      if (expr.split(" ").length > 1) {
+        expr = `tučně (${expr})`;
+      } else {
+        expr = `tučně ${expr}`;
+      }
+    }
+    if (field.elements.namedItem("f-kurzíva")?.checked) {
+      if (expr.split(" ").length > 1) {
+        expr = `kurzíva (${expr})`;
+      } else {
+        expr = `kurzíva ${expr}`;
+      }
+    }
+    return expr;
+  }
+  /**
+   * Add formating to plain text.
+   * @param {string} text
+   * @param {HTMLFormElement} field
+   * @return {string}
+   */
+  function wrapTextInFormat(text, field) {
+    if (field.elements.namedItem("f-tučně")?.checked) {
+      text = "{{tučně}}" + text + "{{-tučně}}";
+    }
+    if (field.elements.namedItem("f-kurzíva")?.checked) {
+      text = "{{kurzíva}}" + text + "{{-kurzíva}}";
+    }
+    return text;
+  }
+
+  const fieldCaseFormControls = `
+  <span class="flex-row case-controls">
+    <label class="flex-row"><input type="radio" name="f-case" value="no-change" checked>Neměnit</label>
+    <label class="flex-row"><input type="radio" name="f-case" value="small">Malé</label>
+    <label class="flex-row"><input type="radio" name="f-case" value="capital">Velké</label>
+    <label class="flex-row"><input type="radio" name="f-case" value="first-capital">První&nbsp;velké</label>
+  </span>
+  `;
+  /**
+   * @param {string} expr
+   * @param {HTMLFormElement} field
+   * @return {string}
+   */
+  function setCase(expr, field) {
+    let helperName = "";
+    switch (field.elements.namedItem("f-case").value) {
+      case "small":
+        helperName = "malé";
+        break;
+      case "capital":
+        helperName = "verzálky";
+        break;
+      case "first-capital":
+        helperName = "první-velké";
+        break;
+      default:
+        return expr;
+    }
+    if (expr.split(" ").length > 1) {
+      expr = `${helperName} (${expr})`;
+    } else {
+      expr = `${helperName} ${expr}`;
+    }
+    return expr;
+  }
+
+  /**
+   *
+   * @param {HTMLElement} templateBuilder
+   * @param {HTMLElement} target
+   */
+  function buildTemplate(templateBuilder, target) {
+    let template = "";
+    for (const field of templateBuilder.children) {
+      const data = fieldCustomData.get(field);
+      if (!data?.getTemplateValue) {
+        continue;
+      }
+      template += data.getTemplateValue() + " ";
+    }
+    target.value = template;
+  }
+
+  // --- Citation generator ---
+  // Generates citations from template
 
   function prepareCitationGenerator() {
     // Get elements for input form and output paragraph.
@@ -14,26 +305,26 @@
     const inputDataElement = document.getElementById("input-data");
 
     if (!(generatorForm instanceof HTMLFormElement)) {
-      throw new TypeError(
-        "Element with id 'generator' must be HTMLFormElement"
+      throw new Error(
+        "Element with id 'generator' must exist and be HTMLFormElement"
       );
     }
 
     if (citationOutput === null) {
-      throw new TypeError("Element with id 'citation' must exist");
+      throw new Error("Element with id 'citation' must exist");
     }
 
     // If input data are present parse them and fill the Form.
     if (inputDataElement !== null) {
       try {
         if (inputDataElement.type !== "application/json") {
-          throw new TypeError(
+          throw new Error(
             "Element #input-data must be script with type 'application/json'"
           );
         }
         const inputData = JSON.parse(inputDataElement.text);
         if (!Array.isArray(inputData)) {
-          throw new TypeError("inputData must be array of objects");
+          throw new Error("inputData must be array of objects");
         }
         if (inputData.length !== 0) {
           fillForm(generatorForm, inputData[0]);
@@ -62,7 +353,7 @@
   function enableFormControls(generatorForm, citationOutput, citationData) {
     const formControls = document.getElementById("form-controls");
     if (formControls === null) {
-      throw new TypeError("Element with id 'form-controls' must exist");
+      throw new Error("Element with id 'form-controls' must exist");
     }
 
     formControls.hidden = false;
@@ -74,10 +365,10 @@
     const currentIndexElem = document.getElementById("cit-data-num");
     const countElem = document.getElementById("cit-data-count");
     if (currentIndexElem === null) {
-      throw new TypeError("Element with id 'cit-data-num' must exist");
+      throw new Error("Element with id 'cit-data-num' must exist");
     }
     if (countElem === null) {
-      throw new TypeError("Element with id 'cit-data-count' must exist");
+      throw new Error("Element with id 'cit-data-count' must exist");
     }
 
     // Show index bigger by one as that is what people generaly expect
@@ -87,10 +378,10 @@
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
     if (prevBtn === null) {
-      throw new TypeError("Element with id 'prev' must exist");
+      throw new Error("Element with id 'prev' must exist");
     }
     if (nextBtn === null) {
-      throw new TypeError("Element with id 'next' must exist");
+      throw new Error("Element with id 'next' must exist");
     }
 
     prevBtn.addEventListener("click", () => {
@@ -176,6 +467,9 @@
   Handlebars.registerHelper("i", (text) => formatItalic(false, text));
   Handlebars.registerHelper("-kurzíva", (text) => formatItalic(true, text));
   Handlebars.registerHelper("-i", (text) => formatItalic(true, text));
+  Handlebars.registerHelper("verzálky", upperCase);
+  Handlebars.registerHelper("první-velké", capitalize);
+  Handlebars.registerHelper("malé", lowerCase);
 
   /**
    * @param {boolean} end
@@ -217,6 +511,33 @@
     }
     text = Handlebars.escapeExpression(text);
     return new Handlebars.SafeString(startingTag + text + endingTag);
+  }
+
+  /**
+   * @param {string} text
+   * @returns {string}
+   */
+  function upperCase(text) {
+    return text.toUpperCase();
+  }
+
+  /**
+   * @param {string} text
+   * @returns {string}
+   */
+  function capitalize(text) {
+    return text
+      .split(" ")
+      .map((word) => word[0].toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  /**
+   * @param {string} text
+   * @returns {string}
+   */
+  function lowerCase(text) {
+    return text.toLowerCase();
   }
 
   main();

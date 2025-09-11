@@ -63,7 +63,7 @@ hr,
 section,
 article,
 header {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 main > section:last-of-type,
 main > article:last-of-type {
@@ -142,14 +142,16 @@ h1 a {
 
 button,
 input,
-textarea {
+textarea,
+select {
     font-family: inherit;
     font-size: 100%;
     padding: 4px 8px;
 }
 
 input,
-textarea {
+textarea,
+select {
     width: 100%;
     border: 3px solid var(--clr-webarchiv-blue);
     background-color: var(--clr-background-secondary);
@@ -298,6 +300,8 @@ tbody > tr:nth-of-type(odd) {
     width: var(--paragraph-width);
 }
 
+/* citation generator */
+
 .cit-gen-fields {
     align-items: stretch;
 }
@@ -316,4 +320,40 @@ tbody > tr:nth-of-type(odd) {
 }
 .cit-gen-inputs > input {
     margin-bottom: 0.5rem;
+}
+
+.field-chooser > select {
+    margin: 0 4px;
+}
+
+.field {
+    background-color: var(--clr-background-secondary);
+    border: var(--clr-webarchiv-blue) solid 3px;
+    align-items: center;
+    padding-left: 4px;
+}
+.field .flex-row {
+    margin-bottom: 0;
+}
+.field button {
+    align-self: stretch;
+    padding-top: auto;
+    padding-bottom: auto;
+}
+.field input {
+    margin: 4px 4px;
+    background-color: var(--clr-white);
+    border-color: var(--clr-black);
+    font-size: var(--font-size);
+    padding: 4px;
+}
+.field .format-controls,
+.field .case-controls {
+    margin: 4px 0;
+}
+
+.max-flex {
+    flex: 1;
+    align-self: stretch;
+    /* padding-right: auto; */
 }

@@ -2,58 +2,77 @@ package components
 
 templ generatorView() {
 	<div class="flex-content-column">
-		<form id="generator">
-			<!-- Template -->
-			<div class="flex-row">
-				<label for="template">Vzor</label>
-				<input type="text" name="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
-			</div>
-			
-			<!-- Output -->
-			<div class="flex-row">
-				<label for="citation">Citace:</label>
-				<p id="citation"></p>
-			</div>
-
-			<hr>
-
-			<!-- Controls -->
-			<div class="flex-row hidden" id="form-controls" hidden>
-				<button type="button" id="prev">Předchozí</button>
-				<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
-				<button type="button" id="next">Další</button>
-			</div>
-
-			<!-- Data -->
-
-			<div class="flex-row cit-gen-fields">
-				<div class="flex-column cit-gen-labels">
-					<label for="příjmení">Příjmení:</label>
-					<label for="jméno">Jméno:</label>
-					<label for="název">Název&nbsp;webu:</label>
-					<label for="součást">Součást:</label>
-					<label for="místo-vydání">Místo&nbsp;vydání:</label>
-					<label for="datum-vydání">Datum&nbsp;vydání:</label>
-					<label for="url">URL&nbsp;webu:</label>
-					<label for="datum-citace">Datum&nbsp;citace:</label>
+		<section>
+			<form id="builder-controls" class="flex-row">
+				<div class="flex-row field-chooser">
+					<button type="button" id="add-field">Přidat&nbsp;pole</button>
+					<select id="field-type">
+						<option value="text">Text</option>
+						<option value="příjmení">Příjmení</option>
+						<option value="jméno">Jméno</option>
+					</select>
+					<button type="button" id="build-template">Vytvořit&nbsp;vzor</button>
 				</div>
-				<div class="flex-column cit-gen-inputs">
-					<input type="text" id="příjmení" data-citationfield="příjmení">
-					<input type="text" id="jméno" data-citationfield="jméno">
-					<input type="text" id="název" data-citationfield="název">
-					<input type="text" id="součást" data-citationfield="součást">
-					<input type="text" id="místo-vydání" data-citationfield="místo-vydání">
-					<input type="text" id="datum-vydání" data-citationfield="datum-vydání">
-					<input type="text" id="url" data-citationfield="url">
-					<input type="text" id="datum-citace" data-citationfield="datum-citace">
-					<script>
-						const input = document.getElementById("datum-citace");
-						input.value = (new Date).toLocaleDateString("en-CA");
-						// Don't question this. This is what gods of javascript wanted. Please give me TemporalAPI soon.
-					</script>
+				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
+			</form>
+		</section>
+		<section id="builder">
+		
+		</section>
+		<hr>
+		<section>
+			<form id="generator">
+				<section>
+					<!-- Template -->
+					<div class="flex-row">
+						<label for="template">Vzor</label>
+						<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
+					</div>
+					<!-- Output -->
+					<div class="flex-row">
+						<label for="citation">Citace:</label>
+						<p id="citation"></p>
+					</div>
+				</section>
+				<hr>
+				<!-- Controls -->
+				<div class="flex-row hidden" id="form-controls" hidden>
+					<button type="button" id="prev">Předchozí</button>
+					<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
+					<button type="button" id="next">Další</button>
 				</div>
-			</div>
-		</form>
+
+				<!-- Data -->
+
+				<div class="flex-row cit-gen-fields">
+					<div class="flex-column cit-gen-labels">
+						<label for="příjmení">Příjmení:</label>
+						<label for="jméno">Jméno:</label>
+						<label for="název">Název&nbsp;webu:</label>
+						<label for="součást">Součást:</label>
+						<label for="místo-vydání">Místo&nbsp;vydání:</label>
+						<label for="datum-vydání">Datum&nbsp;vydání:</label>
+						<label for="url">URL&nbsp;webu:</label>
+						<label for="datum-citace">Datum&nbsp;citace:</label>
+					</div>
+					<div class="flex-column cit-gen-inputs">
+						<input type="text" id="příjmení" data-citationfield="příjmení">
+						<input type="text" id="jméno" data-citationfield="jméno">
+						<input type="text" id="název" data-citationfield="název">
+						<input type="text" id="součást" data-citationfield="součást">
+						<input type="text" id="místo-vydání" data-citationfield="místo-vydání">
+						<input type="text" id="datum-vydání" data-citationfield="datum-vydání">
+						<input type="text" id="url" data-citationfield="url">
+						<input type="text" id="datum-citace" data-citationfield="datum-citace">
+						<script>
+							const input = document.getElementById("datum-citace");
+							input.value = (new Date).toLocaleDateString("en-CA");
+							// Don't question this. This is what gods of javascript wanted. Please give me TemporalAPI soon.
+						</script>
+					</div>
+				</div>
+			</form>
+		</section>
 	</div>
 	<script type="application/json" id="input-data">
 	[
