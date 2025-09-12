@@ -246,18 +246,14 @@
    * @param {HTMLFormElement} field
    */
   function initUrlField(field) {
-    initGenericFormatAndSeparatorField(field, "URL", "url");
+    initGenericUrlField(field, "URL", "url");
   }
 
   /**
    * @param {HTMLFormElement} field
    */
   function initArchivalUrlField(field) {
-    initGenericFormatAndSeparatorField(
-      field,
-      "Archivní&nbsp;URL",
-      "archivní-url"
-    );
+    initGenericUrlField(field, "Archivní&nbsp;URL", "archivní-url");
   }
 
   /**
@@ -301,6 +297,32 @@
     data.getTemplateValue = function () {
       let expr = exprName;
       expr = setCase(expr, field);
+      expr = wrapExprInFormat(expr, field);
+      expr = `{{${expr}}}`;
+      expr = addSeparator(expr, field);
+      return expr;
+    };
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   * @param {string} readableName
+   * @param {string} exprName
+   */
+  function initGenericUrlField(field, readableName, exprName) {
+    field.innerHTML = `
+      <span class="f-start">${readableName}:</span>
+      <div class="flex-column max-flex f-middle">
+        <div class="flex-row max-flex">
+          ${fieldFormatFormControls}
+          ${fieldSeparatorFormControls}
+        </div>
+      </div>
+    `;
+    stopElementFromBeingDragged(field.elements.namedItem("f-oddělovač"), field);
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      let expr = exprName;
       expr = wrapExprInFormat(expr, field);
       expr = `{{${expr}}}`;
       expr = addSeparator(expr, field);
