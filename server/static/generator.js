@@ -442,19 +442,23 @@
   function prepareCitationGenerator() {
     // Get elements for input form and output paragraph.
     const generatorForm = document.getElementById("generator");
-    const citationOutput = document.getElementById("citation");
-    const inputDataElement = document.getElementById("input-data");
-
     if (!(generatorForm instanceof HTMLFormElement)) {
       throw new Error(
         "Element with id 'generator' must exist and be HTMLFormElement"
       );
     }
 
+    const templateElement = document.getElementById("template");
+    if (templateElement === null) {
+      throw new Error("Element with id 'template' must exist");
+    }
+
+    const citationOutput = document.getElementById("citation");
     if (citationOutput === null) {
       throw new Error("Element with id 'citation' must exist");
     }
 
+    const inputDataElement = document.getElementById("input-data");
     // If input data are present parse them and fill the Form.
     if (inputDataElement !== null) {
       try {
@@ -469,7 +473,12 @@
         }
         if (inputData.length !== 0) {
           fillForm(generatorForm, inputData[0]);
-          enableFormControls(generatorForm, citationOutput, inputData);
+          enableFormControls(
+            generatorForm,
+            templateElement,
+            citationOutput,
+            inputData
+          );
         }
       } catch (err) {
         console.error(err);
@@ -478,20 +487,30 @@
 
     // Render the template any time when user inputs data.
     generatorForm.addEventListener("input", () =>
-      generateCitation(generatorForm, citationOutput)
+      generateCitation(generatorForm, templateElement, citationOutput)
+    );
+    // Also when template is changed
+    templateElement.addEventListener("input", () =>
+      generateCitation(generatorForm, templateElement, citationOutput)
     );
 
     // Render the template first time on page load.
-    generateCitation(generatorForm, citationOutput);
+    generateCitation(generatorForm, templateElement, citationOutput);
   }
 
   /**
    *
    * @param {HTMLFormElement} generatorForm
+   * @param {HTMLElement} templateElement
    * @param {HTMLElement} citationOutput
    * @param {Array} citationData
    */
-  function enableFormControls(generatorForm, citationOutput, citationData) {
+  function enableFormControls(
+    generatorForm,
+    templateElement,
+    citationOutput,
+    citationData
+  ) {
     const formControls = document.getElementById("form-controls");
     if (formControls === null) {
       throw new Error("Element with id 'form-controls' must exist");
@@ -533,7 +552,7 @@
       currentDataIndex--;
       currentIndexElem.textContent = (currentDataIndex + 1).toString();
       fillForm(generatorForm, citationData[currentDataIndex]);
-      generateCitation(generatorForm, citationOutput);
+      generateCitation(generatorForm, templateElement, citationOutput);
     });
 
     nextBtn.addEventListener("click", () => {
@@ -544,7 +563,7 @@
       currentDataIndex++;
       currentIndexElem.textContent = (currentDataIndex + 1).toString();
       fillForm(generatorForm, citationData[currentDataIndex]);
-      generateCitation(generatorForm, citationOutput);
+      generateCitation(generatorForm, templateElement, citationOutput);
     });
   }
 
@@ -582,12 +601,11 @@
   /**
    * Replace citationOutput element with template and data from generatorForm.
    * @param {HTMLFormElement} generatorForm
+   * @param {HTMLElement} templateElement
    * @param {HTMLElement} citationOutput
    */
-  function generateCitation(generatorForm, citationOutput) {
-    const template = Handlebars.compile(
-      generatorForm.elements["template"].value
-    );
+  function generateCitation(generatorForm, templateElement, citationOutput) {
+    const template = Handlebars.compile(templateElement.value);
     const data = {};
     for (const element of generatorForm.elements) {
       if ("citationfield" in element.dataset) {

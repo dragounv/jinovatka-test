@@ -1,7 +1,21 @@
 package components
 
 templ generatorView() {
+	<!-- Output -->
+	<div class="flex-content-column citation">
+		<section>
+			<h2>Citace:</h2>
+			<p id="citation">hello</p>
+		</section>
+	</div>
 	<div class="flex-content-column">
+		<section>
+			<!-- Template -->
+			<div class="flex-row">
+				<label for="template">Vzor:</label>
+				<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
+			</div>
+		</section>
 		<section>
 			<form id="builder-controls" class="flex-row">
 				<div class="flex-row field-chooser">
@@ -30,19 +44,7 @@ templ generatorView() {
 		<hr>
 		<section>
 			<form id="generator">
-				<section>
-					<!-- Template -->
-					<div class="flex-row">
-						<label for="template">Vzor</label>
-						<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
-					</div>
-					<!-- Output -->
-					<div class="flex-row">
-						<label for="citation">Citace:</label>
-						<p id="citation"></p>
-					</div>
-				</section>
-				<hr>
+				
 				<!-- Controls -->
 				<div class="flex-row hidden" id="form-controls" hidden>
 					<button type="button" id="prev">Předchozí</button>

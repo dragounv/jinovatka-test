@@ -352,7 +352,7 @@ tbody > tr:nth-of-type(odd) {
 }
 .field input {
     margin: 4px;
-    background-color: var(--clr-white);
+    background-color: var(--clr-background-main);
     border-color: var(--clr-black);
     font-size: var(--font-size);
     padding: 4px;
@@ -368,4 +368,18 @@ tbody > tr:nth-of-type(odd) {
     flex: 5;
 }
 
+.citation {
+    position: sticky;
+    top: 1rem;
+}
+.citation > section {
+    background-color: var(--clr-background-main);
+    border-top: var(--clr-webarchiv-blue) solid 3px;
+    border-bottom: var(--clr-webarchiv-blue) solid 3px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+.citation p {
+    font-size: 1.35rem;
+}
 
