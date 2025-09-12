@@ -10,6 +10,14 @@ templ generatorView() {
 						<option value="text">Text</option>
 						<option value="příjmení">Příjmení</option>
 						<option value="jméno">Jméno</option>
+						<option value="název">Název webu</option>
+						<option value="součást">Součást</option>
+						<option value="místo-vydání">Místo vydání</option>
+						<option value="datum-vydání">Datum vydání</option>
+						<option value="url">URL</option>
+						<option value="archivní-url">Archivní URL</option>
+						<option value="datum-archivace">Datum archivace</option>
+						<option value="datum-citace">Datum citace</option>
 					</select>
 					<button type="button" id="build-template">Vytvořit&nbsp;vzor</button>
 				</div>
@@ -53,6 +61,8 @@ templ generatorView() {
 						<label for="místo-vydání">Místo&nbsp;vydání:</label>
 						<label for="datum-vydání">Datum&nbsp;vydání:</label>
 						<label for="url">URL&nbsp;webu:</label>
+						<label for="archivní-url">Archivní&nbsp;URL:</label>
+						<label for="datum-archivace">Datum&nbsp;archivace:</label>
 						<label for="datum-citace">Datum&nbsp;citace:</label>
 					</div>
 					<div class="flex-column cit-gen-inputs">
@@ -63,6 +73,8 @@ templ generatorView() {
 						<input type="text" id="místo-vydání" data-citationfield="místo-vydání">
 						<input type="text" id="datum-vydání" data-citationfield="datum-vydání">
 						<input type="text" id="url" data-citationfield="url">
+						<input type="text" id="archivní-url" data-citationfield="archivní-url">
+						<input type="text" id="datum-archivace" data-citationfield="datum-archivace">
 						<input type="text" id="datum-citace" data-citationfield="datum-citace">
 						<script>
 							const input = document.getElementById("datum-citace");

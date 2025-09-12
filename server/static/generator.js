@@ -106,6 +106,30 @@
       case "příjmení":
         fieldInitFunc = initLastnameField;
         break;
+      case "název":
+        fieldInitFunc = initWebNameField;
+        break;
+      case "součást":
+        fieldInitFunc = initPartOfField;
+        break;
+      case "místo-vydání":
+        fieldInitFunc = initPlaceOfPublicationField;
+        break;
+      case "datum-vydání":
+        fieldInitFunc = initDateOfPublicationField;
+        break;
+      case "url":
+        fieldInitFunc = initUrlField;
+        break;
+      case "archivní-url":
+        fieldInitFunc = initArchivalUrlField;
+        break;
+      case "datum-archivace":
+        fieldInitFunc = initDateOfHarvestField;
+        break;
+      case "datum-citace":
+        fieldInitFunc = initDatefCitationField;
+        break;
       default:
         throw new Error(`unknown field type: ${type}`);
     }
@@ -150,12 +174,13 @@
    */
   function initTextField(field) {
     field.innerHTML = `
-      <span>Textové&nbsp;pole:</span>
-      <div class="flex-row max-flex">
+      <span class="f-start">Textové&nbsp;pole:</span>
+      <div class="flex-row max-flex f-middle">
         <label class="flex-row max-flex"><input class="max-flex" type="text" name="f-value"></label>
         ${fieldFormatFormControls}
       </div>
     `;
+    stopElementFromBeingDragged(field.elements.namedItem("f-value"), field);
     const data = fieldCustomData.get(field);
     data.getTemplateValue = function () {
       const text = field.elements.namedItem("f-value").value;
@@ -167,34 +192,150 @@
    * @param {HTMLFormElement} field
    */
   function initNameField(field) {
-    field.innerHTML =
-      `<span>Jméno autora:</span>` +
-      fieldFormatFormControls +
-      fieldCaseFormControls;
-    const data = fieldCustomData.get(field);
-    data.getTemplateValue = function () {
-      let expr = "jméno";
-      expr = setCase(expr, field);
-      expr = wrapExprInFormat(expr, field);
-      return `{{${expr}}}`;
-    };
+    initGenericFormatAndSeparatorField(field, "Jméno&nbsp;autora", "jméno");
   }
 
   /**
    * @param {HTMLFormElement} field
    */
   function initLastnameField(field) {
-    field.innerHTML =
-      `<span>Příjmení autora:</span>` +
-      fieldFormatFormControls +
-      fieldCaseFormControls;
+    initGenericFormatAndSeparatorField(
+      field,
+      "Příjmení&nbsp;autora",
+      "příjmení"
+    );
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initWebNameField(field) {
+    initGenericFormatAndSeparatorField(field, "Název&nbsp;webu", "název");
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initPartOfField(field) {
+    initGenericFormatAndSeparatorField(field, "Součást", "součást");
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initPlaceOfPublicationField(field) {
+    initGenericFormatAndSeparatorField(
+      field,
+      "Místo&nbsp;vydání",
+      "místo-vydání"
+    );
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initDateOfPublicationField(field) {
+    initGenericFormatAndSeparatorField(
+      field,
+      "Datum&nbsp;vydání",
+      "datum-vydání"
+    );
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initUrlField(field) {
+    initGenericFormatAndSeparatorField(field, "URL", "url");
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initArchivalUrlField(field) {
+    initGenericFormatAndSeparatorField(
+      field,
+      "Archivní&nbsp;URL",
+      "archivní-url"
+    );
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initDateOfHarvestField(field) {
+    initGenericFormatAndSeparatorField(
+      field,
+      "Datum archivace",
+      "datum-archivace"
+    );
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initDatefCitationField(field) {
+    initGenericFormatAndSeparatorField(field, "Datum citace", "datum-citace");
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   * @param {string} readableName
+   * @param {string} exprName
+   */
+  function initGenericFormatAndSeparatorField(field, readableName, exprName) {
+    field.innerHTML = `
+      <span class="f-start">${readableName}:</span>
+      <div class="flex-column max-flex f-middle">
+        <div class="flex-row max-flex">
+          ${fieldFormatFormControls}
+          ${fieldCaseFormControls}
+        </div>
+        <div class="flex-row">
+          ${fieldSeparatorFormControls}
+        </div>
+      </div>
+    `;
+    stopElementFromBeingDragged(field.elements.namedItem("f-oddělovač"), field);
     const data = fieldCustomData.get(field);
     data.getTemplateValue = function () {
-      let expr = "příjmení";
+      let expr = exprName;
       expr = setCase(expr, field);
       expr = wrapExprInFormat(expr, field);
-      return `{{${expr}}}`;
+      expr = `{{${expr}}}`;
+      expr = addSeparator(expr, field);
+      return expr;
     };
+  }
+
+  /**
+   * This is complete hack but it kinda works.
+   * Use this on text input elements to allow selecting text etc.
+   * It sometimes leaves the field in undragabble state but it's rare and clicking it will fix it.
+   * @param {HTMLElement} element
+   * @param {HTMLElement} field
+   */
+  function stopElementFromBeingDragged(element, field) {
+    element.addEventListener("mousedown", (e) => (field.draggable = false));
+    element.addEventListener("mouseup", (e) => (field.draggable = true));
+    field.addEventListener("mouseup", (e) => (field.draggable = true));
+  }
+
+  const fieldSeparatorFormControls = `
+    <label class="flex-row">Interpunkce:<input type="text" name="f-oddělovač"></label>
+  `;
+  /**
+   * Will append separator at the end of expr. Use as last function in chain.
+   * @param {string} expr
+   * @param {HTMLFormElement} field
+   * @return {string}
+   */
+  function addSeparator(expr, field) {
+    const separator = field.elements.namedItem("f-oddělovač")?.value;
+    if (!separator) {
+      return expr;
+    }
+    return expr + separator;
   }
 
   const fieldFormatFormControls = `

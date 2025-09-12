@@ -326,14 +326,24 @@ tbody > tr:nth-of-type(odd) {
     margin: 0 4px;
 }
 
+.max-flex {
+    flex: 1;
+    align-self: stretch;
+    /* padding-right: auto; */
+}
+
 .field {
     background-color: var(--clr-background-secondary);
     border: var(--clr-webarchiv-blue) solid 3px;
     align-items: center;
-    padding-left: 4px;
+}
+.field span:first-of-type {
+    margin-left: 4px;
+    margin-right: 4px;
 }
 .field .flex-row {
     margin-bottom: 0;
+    justify-content: space-around;
 }
 .field button {
     align-self: stretch;
@@ -341,7 +351,7 @@ tbody > tr:nth-of-type(odd) {
     padding-bottom: auto;
 }
 .field input {
-    margin: 4px 4px;
+    margin: 4px;
     background-color: var(--clr-white);
     border-color: var(--clr-black);
     font-size: var(--font-size);
@@ -351,9 +361,11 @@ tbody > tr:nth-of-type(odd) {
 .field .case-controls {
     margin: 4px 0;
 }
-
-.max-flex {
+.f-start {
     flex: 1;
-    align-self: stretch;
-    /* padding-right: auto; */
 }
+.f-middle {
+    flex: 5;
+}
+
+
