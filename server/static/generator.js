@@ -36,6 +36,11 @@
     addFieldBtn.addEventListener("click", () => {
       addField(templateBuilder, fieldTypeSelect.value, fieldNumber);
       fieldNumber++;
+      // Remove placeholder if present
+      const placeholder = document.getElementById("builder-placeholder");
+      if (placeholder) {
+        placeholder.remove();
+      }
     });
 
     const removeAllFieldsBtn = document.getElementById("remove-all-fields");
@@ -44,7 +49,8 @@
     }
     removeAllFieldsBtn.addEventListener(
       "click",
-      () => (templateBuilder.innerHTML = "")
+      () =>
+        (templateBuilder.innerHTML = `<i id="builder-placeholder">Tady budou vidět přidaná pole</i>`)
     );
 
     const templateInputElement = document.getElementById("template");
@@ -284,6 +290,7 @@
       <span class="f-start">${readableName}:</span>
       <div class="flex-column max-flex f-middle">
         <div class="flex-row max-flex">
+            <b>Písmo:</b>
           ${fieldFormatFormControls}
           ${fieldCaseFormControls}
         </div>
@@ -344,7 +351,7 @@
   }
 
   const fieldSeparatorFormControls = `
-    <label class="flex-row">Interpunkce:<input type="text" name="f-oddělovač"></label>
+    <label class="flex-row"><b>Interpunkce:</b><input type="text" name="f-oddělovač"></label>
   `;
   /**
    * Will append separator at the end of expr. Use as last function in chain.
@@ -407,7 +414,7 @@
 
   const fieldCaseFormControls = `
   <span class="flex-row case-controls">
-    <label class="flex-row"><input type="radio" name="f-case" value="no-change" checked>Neměnit</label>
+    <label class="flex-row"><input type="radio" name="f-case" value="no-change" checked>Výchozí</label>
     <label class="flex-row"><input type="radio" name="f-case" value="small">Malé</label>
     <label class="flex-row"><input type="radio" name="f-case" value="capital">Velké</label>
     <label class="flex-row"><input type="radio" name="f-case" value="first-capital">První&nbsp;velké</label>
@@ -425,7 +432,7 @@
         helperName = "malé";
         break;
       case "capital":
-        helperName = "verzálky";
+        helperName = "velké";
         break;
       case "first-capital":
         helperName = "první-velké";
@@ -648,9 +655,10 @@
   Handlebars.registerHelper("i", (text) => formatItalic(false, text));
   Handlebars.registerHelper("-kurzíva", (text) => formatItalic(true, text));
   Handlebars.registerHelper("-i", (text) => formatItalic(true, text));
-  Handlebars.registerHelper("verzálky", upperCase);
+  Handlebars.registerHelper("velké", upperCase);
   Handlebars.registerHelper("první-velké", capitalize);
   Handlebars.registerHelper("malé", lowerCase);
+  // Handlebars.registerHelper("autoři", formatAuthors);
 
   /**
    * @param {boolean} end
@@ -708,6 +716,7 @@
    */
   function capitalize(text) {
     return text
+      .toLowerCase()
       .split(" ")
       .map((word) => word[0].toUpperCase() + word.slice(1))
       .join(" ");

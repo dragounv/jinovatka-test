@@ -370,7 +370,7 @@ tbody > tr:nth-of-type(odd) {
 
 .citation {
     position: sticky;
-    top: 1rem;
+    top: 0;
 }
 .citation > section {
     background-color: var(--clr-background-main);
@@ -383,3 +383,8 @@ tbody > tr:nth-of-type(odd) {
     font-size: 1.35rem;
 }
 
+.inline-step {
+    margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+    display: inline-block;
+}

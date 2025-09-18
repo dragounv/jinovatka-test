@@ -9,13 +9,7 @@ templ generatorView() {
 		</section>
 	</div>
 	<div class="flex-content-column">
-		<section>
-			<!-- Template -->
-			<div class="flex-row">
-				<label for="template">Vzor:</label>
-				<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
-			</div>
-		</section>
+		<span class="inline-step"><i>a. Sestavte šablonu nebo vyberte z připravených možností</i></span>
 		<section>
 			<form id="builder-controls" class="flex-row">
 				<div class="flex-row field-chooser">
@@ -33,27 +27,33 @@ templ generatorView() {
 						<option value="datum-archivace">Datum archivace</option>
 						<option value="datum-citace">Datum citace</option>
 					</select>
-					<button type="button" id="build-template">Vytvořit&nbsp;vzor</button>
 				</div>
 				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
 			</form>
 		</section>
 		<section id="builder">
-		
+			<i id="builder-placeholder">Tady budou vidět přidaná pole</i>
 		</section>
+		<span class="inline-step"><i>b. Vygenerujte šablonu a použijte pro aktuální citaci</i></span>
+		<button type="button" id="build-template" form="builder-controls">Použít&nbsp;šablonu</button>
 		<hr>
 		<section>
 			<form id="generator">
-				
+				<span class="inline-step"><i>c. Doplňte metadata potřebná pro citaci</i></span>
 				<!-- Controls -->
 				<div class="flex-row hidden" id="form-controls" hidden>
 					<button type="button" id="prev">Předchozí</button>
 					<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
 					<button type="button" id="next">Další</button>
 				</div>
-
+				<section>
+					<!-- Template -->
+					<div class="flex-row">
+						<label for="template">Šablona:</label>
+						<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
+					</div>
+				</section>
 				<!-- Data -->
-
 				<div class="flex-row cit-gen-fields">
 					<div class="flex-column cit-gen-labels">
 						<label for="příjmení">Příjmení:</label>
