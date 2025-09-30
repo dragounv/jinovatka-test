@@ -106,6 +106,9 @@
       case "text":
         fieldInitFunc = initTextField;
         break;
+      case "autoři":
+        fieldInitFunc = initAuthorsField;
+        break;
       case "jméno":
         fieldInitFunc = initNameField;
         break;
@@ -191,6 +194,114 @@
     data.getTemplateValue = function () {
       const text = field.elements.namedItem("f-value").value;
       return wrapTextInFormat(text, field);
+    };
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   */
+  function initAuthorsField(field) {
+    // Create the HTML representing the element
+    field.innerHTML = `
+      <span class="f-start">Autoři:</span>
+      <div class="flex-column max-flex f-middle authors-field">
+        <span class="flex-row case-controls">
+          <b>Písmo jména (první autor):</b>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="velke">Velké</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="prvnivelke" checked>První&nbsp;velké</label>
+        </span>
+        <span class="flex-row case-controls">
+          <b>Písmo příjmení (první autor):</b>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="velke" checked>Velké</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="prvnivelke">První&nbsp;velké</label>
+        </span>
+        <span class="flex-row case-controls">
+          <b>Na prvním místě (první autor):</b>
+          <label class="flex-row"><input type="radio" name="f-poradi-prvni" value="prijmeni" checked>Příjmení</label>
+          <label class="flex-row"><input type="radio" name="f-poradi-prvni" value="jmeno">Jméno</label>
+        </span>
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (první autor):</b><input class="max-flex" type="text" value="," name="f-intjmeno-prvni"></label>
+        <hr class="max-flex">
+        <span class="flex-row case-controls">
+          <b>Písmo jména:</b>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="velke">Velké</label>
+          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="prvnivelke" checked>První&nbsp;velké</label>
+        </span>
+        <span class="flex-row case-controls">
+          <b>Písmo příjmení:</b>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="velke" checked>Velké</label>
+          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="prvnivelke">První&nbsp;velké</label>
+        </span>
+        <span class="flex-row case-controls">
+          <b>Na prvním místě (ostatní):</b>
+          <label class="flex-row"><input type="radio" name="f-poradi" value="prijmeni" checked>Příjmení</label>
+          <label class="flex-row"><input type="radio" name="f-poradi" value="jmeno">Jméno</label>
+        </span>
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (ostatní):</b><input class="max-flex" type="text" value="," name="f-intjmeno"></label>
+        <hr class="max-flex">
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;autory:</b><input class="max-flex" type="text" value=";" name="f-intautor"></label>
+        <span class="flex-row case-controls">
+          <b>Spojka před posledním autorem:</b>
+          <label class="flex-row"><input type="radio" name="f-a" value="a" checked>a</label>
+          <label class="flex-row"><input type="radio" name="f-a" value="&amp;">&amp;</label>
+          <label class="flex-row"><input type="radio" name="f-a" value="and">and</label>
+        </span>
+        <span class="flex-row case-controls">
+          <b>Použít spojku vždy když je více než jeden autor:</b>
+          <label class="flex-row"><input type="radio" name="f-vzdya" value="" checked>Ne</label>
+          <label class="flex-row"><input type="radio" name="f-vzdya" value="1">Ano</label>
+        </span>
+        <label class="flex-row"><b>Maximalní&nbsp;počet&nbsp;autorů:</b><input class="max-flex" type="number" min="1" step="1" value="5" name="f-max"></label>
+        <label class="flex-row"><b>Přípona (a další):</b><input class="max-flex" type="text" value="et al." name="f-etal"></label>
+      </div>
+    `;
+
+    // Put the function necessary for rendering the part of template
+    // represented by the field into global weakMap so it can be called
+    // from the citation generator part of this sphagetti
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      /** @type {string[]} Arguments for the autoři helper */
+      const args = [];
+      const inputs = field.elements;
+
+      for (const input of inputs) {
+        if ("value" in input && "name" in input) {
+          /** @type {string} */
+          let key = input.name;
+          if (key.startsWith("f-")) {
+            key = key.slice(2); // Remove the "f-" prefix
+          } else {
+            // If you see this warning then check the HTML template above.
+            console.warn(
+              "initAuthorsField found input with name without 'f-' prefix. Got:",
+              key
+            );
+            continue;
+          }
+          // Skip unchecked radio inputs
+          if (
+            "type" in input &&
+            input.type === "radio" &&
+            "checked" in input &&
+            !input.checked
+          ) {
+            continue;
+          }
+          console.log(input, input.value);
+          args.push(`${key}="${input.value}"`);
+        }
+      }
+
+      return "{{autoři " + args.join(" ") + "}}";
     };
   }
 
@@ -477,6 +588,12 @@
       );
     }
 
+    // Part of the form contatining authors metadata
+    const authorsDiv = document.getElementById("authors");
+    if (authorsDiv === null) {
+      throw new Error("Element with id 'authors' must exist");
+    }
+
     const templateElement = document.getElementById("template");
     if (templateElement === null) {
       throw new Error("Element with id 'template' must exist");
@@ -501,9 +618,10 @@
           throw new Error("inputData must be array of objects");
         }
         if (inputData.length !== 0) {
-          fillForm(generatorForm, inputData[0]);
+          fillForm(generatorForm, authorsDiv, inputData[0]);
           enableFormControls(
             generatorForm,
+            authorsDiv,
             templateElement,
             citationOutput,
             inputData
@@ -530,12 +648,14 @@
   /**
    *
    * @param {HTMLFormElement} generatorForm
+   * @param {HTMLElement} authorsDiv
    * @param {HTMLElement} templateElement
    * @param {HTMLElement} citationOutput
-   * @param {Array} citationData
+   * @param {Array<any>} citationData
    */
   function enableFormControls(
     generatorForm,
+    authorsDiv,
     templateElement,
     citationOutput,
     citationData
@@ -580,7 +700,7 @@
       saveCurrentCitationData(generatorForm, citationData, currentDataIndex);
       currentDataIndex--;
       currentIndexElem.textContent = (currentDataIndex + 1).toString();
-      fillForm(generatorForm, citationData[currentDataIndex]);
+      fillForm(generatorForm, authorsDiv, citationData[currentDataIndex]);
       generateCitation(generatorForm, templateElement, citationOutput);
     });
 
@@ -591,40 +711,145 @@
       saveCurrentCitationData(generatorForm, citationData, currentDataIndex);
       currentDataIndex++;
       currentIndexElem.textContent = (currentDataIndex + 1).toString();
-      fillForm(generatorForm, citationData[currentDataIndex]);
+      fillForm(generatorForm, authorsDiv, citationData[currentDataIndex]);
       generateCitation(generatorForm, templateElement, citationOutput);
+    });
+
+    const addAuthorButton = document.getElementById("add-author");
+    if (addAuthorButton === null) {
+      throw new Error("Element with id 'add-author' must exist");
+    }
+    addAuthorButton.addEventListener("click", () => {
+      addAuthorFieldset(authorsDiv);
+      generatorForm.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+
+    const removeAuthorButton = document.getElementById("remove-author");
+    if (removeAuthorButton === null) {
+      throw new Error("Element with id 'remove-author' must exist");
+    }
+    removeAuthorButton.addEventListener("click", () => {
+      removeLastAuthorFieldset(authorsDiv);
+      generatorForm.dispatchEvent(new Event("input", { bubbles: true }));
     });
   }
 
   /**
-   *
+   * Save current form values into citationData array
    * @param {HTMLFormElement} generatorForm
-   * @param {Array} citationData
+   * @param {Array<any>} citationData
    * @param {number} currentIndex
    */
   function saveCurrentCitationData(generatorForm, citationData, currentIndex) {
-    const currentData = citationData[currentIndex];
+    citationData[currentIndex] = extractCurrentCitationData(generatorForm);
+  }
+
+  /**
+   * Extract data from generatorForm and return them
+   * @param {HTMLFormElement} generatorForm
+   * @return {object}
+   */
+  function extractCurrentCitationData(generatorForm) {
+    const currentData = {};
+    currentData.autoři = [];
     for (const element of generatorForm.elements) {
-      if ("citationfield" in element.dataset) {
+      // Handle all fieldsets with author data
+      if (
+        "authorId" in element.dataset &&
+        element instanceof HTMLFieldSetElement
+      ) {
+        const author = {};
+        const firstname = element.elements.namedItem("jméno")?.value;
+        const lastname = element.elements.namedItem("příjmení")?.value;
+        author.jméno = firstname ?? "";
+        author.příjmení = lastname ?? "";
+        // This uses the fact that js will not error on inserting to random array indices.
+        // It is not the responsibility of this function to ensure that the author fieldsets are properly numbered and ordered.
+        const authorId = Number(element.dataset.authorId);
+        currentData.autoři[authorId] = author;
+        // Hanlde the rest of data
+      } else if ("citationfield" in element.dataset) {
         currentData[element.dataset.citationfield] = element.value;
       }
     }
+    return currentData;
   }
 
   /**
    *
    * @param {HTMLFormElement} generatorForm
+   * @param {HTMLElement} authorsDiv // Part of form for author fieldsets
    * @param {any} inputData // Object containing citation field values
    */
-  function fillForm(generatorForm, inputData) {
+  function fillForm(generatorForm, authorsDiv, inputData) {
+    authorsDiv.innerHTML = "";
     for (const field in inputData) {
-      const element = generatorForm.elements.namedItem(field);
-      if (element === null) {
-        console.warn(`Form element with id ${field} does not exist!`);
-        continue;
+      if (field === "autoři") {
+        inputData[field].forEach((author, id) => {
+          const authorHTML = createAuthorHTML(author, id);
+          authorsDiv.insertAdjacentHTML("beforeend", authorHTML);
+        });
+      } else {
+        const element = generatorForm.elements.namedItem(field);
+        if (element === null) {
+          console.warn(`Form element with id ${field} does not exist!`);
+          continue;
+        }
+        element.value = inputData[field];
       }
-      element.value = inputData[field];
     }
+  }
+
+  /**
+   * @param {{jméno: string, příjmení: string}} author
+   * @param {number} id
+   * @returns {string} String containing HTML representing the author form element
+   */
+  function createAuthorHTML(author, id) {
+    return `
+      <fieldset data-author-id="${id}">
+        <legend>Autor ${id + 1}</legend>
+        <div class="flex-row cit-gen-fields">
+          <div class="flex-column cit-gen-labels">
+            <label for="příjmení">Příjmení:</label>
+            <label for="jméno">Jméno:</label>
+          </div>
+          <div class="flex-column cit-gen-inputs">
+            <input type="text" name="příjmení" value=${author.příjmení}>
+            <input type="text" name="jméno" value=${author.jméno}>
+          </div>
+        </div>
+      </fieldset>
+    `;
+  }
+
+  /**
+   * Add empty author fieldset to the form
+   * @param {HTMLElement} authorsDiv
+   */
+  function addAuthorFieldset(authorsDiv) {
+    let id = authorsDiv.lastElementChild?.dataset.authorId;
+    if (id) {
+      id = Number(id) + 1;
+    } else {
+      id = 0;
+    }
+    authorsDiv.insertAdjacentHTML(
+      "beforeend",
+      createAuthorHTML({ jméno: "", příjmení: "" }, id)
+    );
+  }
+
+  /**
+   * Remove last author fieldset from the form
+   * @param {HTMLElement} authorsDiv
+   */
+  function removeLastAuthorFieldset(authorsDiv) {
+    const lastElement = authorsDiv.lastElementChild;
+    if (lastElement) {
+      lastElement.remove();
+    }
+    // Otherwise do nothing
   }
 
   /**
@@ -635,15 +860,9 @@
    */
   function generateCitation(generatorForm, templateElement, citationOutput) {
     const template = Handlebars.compile(templateElement.value);
-    const data = {};
-    for (const element of generatorForm.elements) {
-      if ("citationfield" in element.dataset) {
-        data[element.dataset.citationfield] = element.value;
-      }
-    }
+    const data = extractCurrentCitationData(generatorForm);
     const citation = template(data);
     citationOutput.innerHTML = citation;
-    console.log(citation);
   }
 
   // Add helpers to Handlebars for producing formatted output.
@@ -658,14 +877,14 @@
   Handlebars.registerHelper("velké", upperCase);
   Handlebars.registerHelper("první-velké", capitalize);
   Handlebars.registerHelper("malé", lowerCase);
-  // Handlebars.registerHelper("autoři", formatAuthors);
+  // Take array of authors and format them to ISO 690
+  Handlebars.registerHelper("autoři", formatAuthors);
 
   /**
    * @param {boolean} end
    * @param {any} text
    */
   function formatBold(end, text) {
-    console.log(text);
     const startingTag = "<b>";
     const endingTag = "</b>";
     if (end) {
@@ -686,7 +905,6 @@
    * @param {any} text
    */
   function formatItalic(end, text) {
-    console.log(text);
     const startingTag = "<i>";
     const endingTag = "</i>";
     if (end) {
@@ -715,6 +933,12 @@
    * @returns {string}
    */
   function capitalize(text) {
+    if (text.length === 0) {
+      return text;
+    }
+    if (text.length === 1) {
+      return text.toUpperCase();
+    }
     return text
       .toLowerCase()
       .split(" ")
@@ -728,6 +952,207 @@
    */
   function lowerCase(text) {
     return text.toLowerCase();
+  }
+
+  /**
+   * This helper will fill the template with authors formated per ISO and user arguments.
+   * @param  {any} hashOptions hashOptions.hash contains object with options
+   */
+  function formatAuthors(hashOptions) {
+    /*
+    Output can look like (iso - other styles are very similar and usually simpler):
+    LASTNAME, Firstname; LASTNAME, Firstname a LASTNAME, Firstname.
+    LASTNAME, Firstname; LASTNAME, Firstname; ... LASTNAME, Firstname et al.
+    */
+
+    /*
+    Posible options:
+    number of authors to show
+    should we show "et al." or something else when there is more
+    firsname lastname separators
+    author separator
+    firsname format - case, bold/italic
+    lastname format
+    different format for fisrt author
+    add "a" or "&" before last author
+    order of firstname and lastname
+    */
+
+    /** @type {{jméno:string, příjmení:string}[]} List containing author objects from template context */
+    const authors = this.autoři ?? [];
+    /** @type {string[]} List of strings that will be joined to produce final output */
+    const outputBuilder = [];
+    /** @type {object} Unwrapped options */
+    const options = hashOptions.hash;
+
+    /** How many authors to show (five is default as in ISO 690) */
+    const maxAuthors = options.max !== undefined ? Number(options.max) : 5;
+    /** @type {string} What to show if we have more than max authors */
+    const overLimitSuffix =
+      options.etal !== undefined ? options.etal : "et al.";
+    /** @type {string} Separator between lastname and firstname (first author) */
+    const nameSeparatorFirstAuthor =
+      options["intjmeno-prvni"] !== undefined ? options["intjmeno-prvni"] : ",";
+    /** @type {string} Separator between lastname and firstname */
+    const nameSeparator =
+      options.intjmeno !== undefined ? options.intjmeno : ",";
+    /** @type {string} Separator between authors */
+    const authorSeparator =
+      options.intautor !== undefined ? options.intautor : ";";
+    /** @type {string} Firstname formatting options */
+    const firstnameFormatFirstAuthor =
+      options["formatjmeno-prvni"] !== undefined
+        ? options["formatjmeno-prvni"]
+        : "prvnivelke";
+    /** @type {string} Firstname formatting options */
+    const firstnameFormatOther =
+      options.formatjmeno !== undefined ? options.formatjmeno : "prvnivelke";
+    /** @type {string} Lastname formatting options */
+    const lastnameFormatFirstAuthor =
+      options["formatprijmeni-prvni"] !== undefined
+        ? options["formatprijmeni-prvni"]
+        : "velke";
+    /** @type {string} Lastname formatting options */
+    const lastnameFormatOther =
+      options.formatprijmeni !== undefined ? options.formatprijmeni : "velke";
+    /** @type {string} What to add before last author (ussualy "a" or "&" or "and") */
+    const andSeparator = options.a !== undefined ? options.a : "a";
+    /** @type {boolean} Should we print andSeparator even if we have max authors. */
+    const alwaysPrintAndSeparator =
+      options.vzdya !== undefined ? Boolean(options.vzdya) : false;
+    /** @type {string} Order of firsname and lastname (first author) */
+    const nameOrderFirtsAuthor =
+      options["poradi-prvni"] !== undefined
+        ? options["poradi-prvni"]
+        : "prijmeni";
+    /** @type {string} Order of firsname and lastname (rest) */
+    const nameOrder =
+      options.poradi !== undefined ? options.poradi : "prijmeni";
+
+    for (let i = 0; i < authors.length; i++) {
+      // This will be the smaller of the two possible limits on number of authors
+      const authorLimit = Math.min(authors.length, maxAuthors);
+
+      // If author limit break loop
+      if (i >= authorLimit) {
+        // If overLimitSufix is set and maxAuthors is smaller than authors.length
+        if (overLimitSuffix !== "" && maxAuthors < authors.length) {
+          outputBuilder.push(" ", overLimitSuffix);
+        }
+        break;
+      }
+
+      const author = authors[i];
+      // Ensure that name parts exist
+      author.jméno ??= "";
+      author.příjmení ??= "";
+
+      let authorStr = "";
+
+      // Select currect format to use
+      let firstnameFormat = firstnameFormatOther;
+      let lastnameFormat = lastnameFormatOther;
+      if (i === 0) {
+        firstnameFormat = firstnameFormatFirstAuthor;
+        lastnameFormat = lastnameFormatFirstAuthor;
+      }
+
+      // Set lettercase of name parts
+      const firstname = chooseCaseFunc(firstnameFormat)(author.jméno);
+      const lastname = chooseCaseFunc(lastnameFormat)(author.příjmení);
+
+      // This is used to check if the name part was empty
+      let lastAddedNamePart = "";
+
+      // Get the correct value to determine the order of firstname and lastname
+      let nameOrderThisIter = nameOrder;
+      if (i === 0) {
+        nameOrderThisIter = nameOrderFirtsAuthor;
+      }
+
+      // If order is set to "prijmeni", then lastname will go first
+      if (nameOrderThisIter === "prijmeni") {
+        authorStr += lastname;
+        lastAddedNamePart = lastname;
+      } else {
+        authorStr += firstname;
+        lastAddedNamePart = firstname;
+      }
+
+      // Set correct name separator
+      let nameSeparatorThisIter = nameSeparator;
+      if (i === 0) {
+        nameSeparatorThisIter = nameSeparatorFirstAuthor;
+      }
+
+      // Add name separator and space (this space should be added always)
+      if (lastAddedNamePart !== "") {
+        authorStr += nameSeparatorThisIter + " ";
+      } else {
+        authorStr += " "; // No name part, add only space
+      }
+
+      // Add rest of the name
+      if (nameOrderThisIter === "prijmeni") {
+        authorStr += firstname;
+        lastAddedNamePart = firstname;
+      } else {
+        authorStr += lastname;
+        lastAddedNamePart = lastname;
+      }
+
+      // If andSeparator is set
+      // and there is at least two authors
+      // and we are before the last author
+      // and the number of authors to print is less then authors limit or the alwaysPrintAndSeparator is true
+      // then print the andSeparator
+      if (
+        andSeparator !== "" &&
+        authors.length > 1 &&
+        i === authorLimit - 2 &&
+        (authors.length <= authorLimit || alwaysPrintAndSeparator)
+      ) {
+        authorStr += " " + andSeparator + " ";
+      } else {
+        // Otherwise try to print author separator
+
+        // If we are not last
+        // (and from before we know that the conditions for andSeparator are not met)
+        // then print authorSeparator
+        if (i < authorLimit - 1) {
+          if (lastAddedNamePart !== "") {
+            authorStr += authorSeparator + " ";
+          } else {
+            authorStr += " ";
+          }
+        }
+      }
+
+      // Add to builder
+      outputBuilder.push(authorStr);
+    }
+
+    return outputBuilder.join("");
+  }
+
+  /**
+   * Used for author formatting
+   * @param {string} formatOptions
+   * @returns {function(string):string} Function that takes text transforms letter case and returns it
+   */
+  function chooseCaseFunc(formatOptions) {
+    const options = new Set(formatOptions.split(","));
+    if (options.has("velke")) {
+      return upperCase;
+    } else if (options.has("prvnivelke")) {
+      return capitalize;
+    } else if (options.has("male")) {
+      return lowerCase;
+    } else {
+      return function (text) {
+        return text;
+      };
+    }
   }
 
   main();

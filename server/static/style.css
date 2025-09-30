@@ -361,6 +361,12 @@ tbody > tr:nth-of-type(odd) {
 .field .case-controls {
     margin: 4px 0;
 }
+.field hr {
+    border: 0;
+    border-top: var(--clr-black) solid 2px;
+    margin: 0;
+    margin-right: 1rem;
+}
 .f-start {
     flex: 1;
 }
@@ -387,4 +393,19 @@ tbody > tr:nth-of-type(odd) {
     margin-bottom: 0.5rem;
     font-size: 1.35rem;
     display: inline-block;
+}
+
+fieldset {
+    padding: 0.25rem;
+    /* margin-bottom: 8px; */
+    /* border: solid black 2px; */
+    margin: 0;
+    border: 0;
+}
+
+.authors-field input[type="text"] {
+    width: 5rem;
+}
+.authors-field {
+    align-items: flex-start;
 }

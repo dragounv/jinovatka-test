@@ -16,8 +16,9 @@ templ generatorView() {
 					<button type="button" id="add-field">Přidat&nbsp;pole</button>
 					<select id="field-type">
 						<option value="text">Text</option>
-						<option value="příjmení">Příjmení</option>
-						<option value="jméno">Jméno</option>
+						<option value="autoři">Autoři</option>
+						// <option value="příjmení">Příjmení</option>
+						// <option value="jméno">Jméno</option>
 						<option value="název">Název webu</option>
 						<option value="součást">Součást</option>
 						<option value="místo-vydání">Místo vydání</option>
@@ -46,18 +47,37 @@ templ generatorView() {
 					<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
 					<button type="button" id="next">Další</button>
 				</div>
-				<section>
-					<!-- Template -->
-					<div class="flex-row">
-						<label for="template">Šablona:</label>
-						<input type="text" id="template" value="{{tučně příjmení}}, {{jméno}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
-					</div>
-				</section>
+				<!-- Template -->
+				<div class="flex-row">
+					<label for="template">Šablona:</label>
+					<input type="text" id="template" value="{{autoři}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
+				</div>
+
+				<div class="flex-row">
+					<button type="button" id="add-author">Přidat autora</button>
+					<button type="button" id="remove-author">Odebrat autora</button>
+				</div>
 				<!-- Data -->
+				<div id="authors">
+					<fieldset data-author-id="0">
+						<legend>Autor 1</legend>
+						<div class="flex-row cit-gen-fields">
+							<div class="flex-column cit-gen-labels">
+								<label for="příjmení">Příjmení:</label>
+								<label for="jméno">Jméno:</label>
+							</div>
+							<div class="flex-column cit-gen-inputs">
+								<input type="text" name="příjmení">
+								<input type="text" name="jméno">
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				
 				<div class="flex-row cit-gen-fields">
 					<div class="flex-column cit-gen-labels">
-						<label for="příjmení">Příjmení:</label>
-						<label for="jméno">Jméno:</label>
+						// <label for="příjmení">Příjmení:</label>
+						// <label for="jméno">Jméno:</label>
 						<label for="název">Název&nbsp;webu:</label>
 						<label for="součást">Součást:</label>
 						<label for="místo-vydání">Místo&nbsp;vydání:</label>
@@ -68,8 +88,8 @@ templ generatorView() {
 						<label for="datum-citace">Datum&nbsp;citace:</label>
 					</div>
 					<div class="flex-column cit-gen-inputs">
-						<input type="text" id="příjmení" data-citationfield="příjmení">
-						<input type="text" id="jméno" data-citationfield="jméno">
+						// <input type="text" id="příjmení" data-citationfield="příjmení">
+						// <input type="text" id="jméno" data-citationfield="jméno">
 						<input type="text" id="název" data-citationfield="název">
 						<input type="text" id="součást" data-citationfield="součást">
 						<input type="text" id="místo-vydání" data-citationfield="místo-vydání">
@@ -91,16 +111,28 @@ templ generatorView() {
 	<script type="application/json" id="input-data">
 	[
 		{
-			"příjmení": "Dragoun",
-			"jméno": "Václav",
+			"autoři": [
+				{
+					"příjmení": "Dragoun",
+					"jméno": "Václav"
+				}
+			],
 			"název": "Nejlepší název na světě",
 			"místo-vydání": "Praha",
 			"datum-vydání": "29. Prosince 1909",
 			"url": "https://webarchiv.cz"
 		},
 		{
-			"příjmení": "Dreaming",
-			"jméno": "Duck",
+			"autoři": [
+				{
+					"příjmení": "Dragoun",
+					"jméno": "Václav"
+				},
+				{
+					"příjmení": "Dreaming",
+					"jméno": "Duck"
+				}
+			],
 			"název": "Kachny jsou nejlepší",
 			"místo-vydání": "Rybník u Potoka",
 			"datum-vydání": "2025-12-29",
