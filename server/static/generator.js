@@ -1,4 +1,5 @@
 // The generator view script
+// This script needs Handlebars and Luxon to be loaded
 (function () {
   function main() {
     prepareTemplateBuilder();
@@ -352,11 +353,7 @@
    * @param {HTMLFormElement} field
    */
   function initDateOfPublicationField(field) {
-    initGenericFormatAndSeparatorField(
-      field,
-      "Datum&nbsp;vydání",
-      "datum-vydání"
-    );
+    initGenericTimeField(field, "Datum&nbsp;vydání", "datum-vydání");
   }
 
   /**
@@ -377,18 +374,14 @@
    * @param {HTMLFormElement} field
    */
   function initDateOfHarvestField(field) {
-    initGenericFormatAndSeparatorField(
-      field,
-      "Datum archivace",
-      "datum-archivace"
-    );
+    initGenericTimeField(field, "Datum archivace", "datum-archivace");
   }
 
   /**
    * @param {HTMLFormElement} field
    */
   function initDatefCitationField(field) {
-    initGenericFormatAndSeparatorField(field, "Datum citace", "datum-citace");
+    initGenericTimeField(field, "Datum citace", "datum-citace");
   }
 
   /**
@@ -420,6 +413,58 @@
       expr = addSeparator(expr, field);
       return expr;
     };
+  }
+
+  /**
+   * @param {HTMLFormElement} field
+   * @param {string} readableName
+   * @param {string} exprName
+   */
+  function initGenericTimeField(field, readableName, exprName) {
+    field.innerHTML = `
+      <span class="f-start">${readableName}:</span>
+      <div class="flex-column max-flex f-middle">
+        <div class="flex-row max-flex">
+          <select class="flex-row" name="f-date-format">
+            <option value="iso-date">Datum (RRRR-MM-DD)</option>
+            <option value="rok">Rok</option>
+            <option value="human">Datum dlouhé</option>
+            <option value="iso">Datum dlouhé (ISO 8601)</option>
+            <option value="rfc">Datum dlouhé (RFC 3339)</option>
+            <option value="apa">APA (RRRR, měsíc DD)</option>
+            <option value="bez-formatu">Neměnit formát</option>
+          </select>
+          <label class="flex-row"><input type="checkbox" name="f-utc">UTC</label>
+        </div>
+      </div>
+    `;
+    //<option value="iso-time">ISO 8601 jen čas</option>
+    const data = fieldCustomData.get(field);
+    data.getTemplateValue = function () {
+      let expr = exprName;
+      expr = formatTime(field, expr);
+      expr = `{{${expr}}}`;
+      return expr;
+    };
+
+    /**
+     * @param {HTMLFormElement} field
+     * @param {string} expr
+     */
+    function formatTime(field, expr) {
+      expr = `datum ${expr}`;
+      let formatParam = "";
+      const utc = field.elements.namedItem("f-utc");
+      if (utc !== null && "checked" in utc && utc.checked) {
+        formatParam = "utc-";
+      }
+      const format = field.elements.namedItem("f-date-format");
+      if (format !== null && "value" in format) {
+        formatParam += format.value;
+        expr += ' "' + formatParam + '"';
+      }
+      return expr;
+    }
   }
 
   /**
@@ -632,6 +677,9 @@
       }
     }
 
+    // Copy values from datepickers to their text input elements
+    enableDatepickers();
+
     // Render the template any time when user inputs data.
     generatorForm.addEventListener("input", () =>
       generateCitation(generatorForm, templateElement, citationOutput)
@@ -731,6 +779,37 @@
     removeAuthorButton.addEventListener("click", () => {
       removeLastAuthorFieldset(authorsDiv);
       generatorForm.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  }
+
+  /**
+   * Register input callbacks to the datetime input elements so they propagate
+   * the value to the adjacent text input elements.
+   * This is done so that user has the power to use custom date format but also
+   * has the convinience of datepicker.
+   */
+  function enableDatepickers() {
+    const elementIDs = [
+      { textInput: "datum-vydání", dateTimeInput: "datum-vydání-datetime" },
+      {
+        textInput: "datum-archivace",
+        dateTimeInput: "datum-archivace-datetime",
+      },
+      { textInput: "datum-citace", dateTimeInput: "datum-citace-datetime" },
+    ];
+    elementIDs.forEach((ids) => {
+      const textInput = document.getElementById(ids.textInput);
+      if (textInput === null) {
+        throw new Error(`Element with id ${ids.textInput} must exist`);
+      }
+      const dateTimeInput = document.getElementById(ids.dateTimeInput);
+      if (dateTimeInput === null) {
+        throw new Error(`Element with id ${ids.dateTimeInput} must exist`);
+      }
+
+      dateTimeInput.addEventListener("change", () => {
+        textInput.value = dateTimeInput.value;
+      });
     });
   }
 
@@ -879,6 +958,7 @@
   Handlebars.registerHelper("malé", lowerCase);
   // Take array of authors and format them to ISO 690
   Handlebars.registerHelper("autoři", formatAuthors);
+  Handlebars.registerHelper("datum", formatDateHelper);
 
   /**
    * @param {boolean} end
@@ -1152,6 +1232,47 @@
       return function (text) {
         return text;
       };
+    }
+  }
+
+  /**
+   * Helper for formating dates and times.
+   * @param {string} date Date and time in simplified iso format or custom user data.
+   * @param {string} [format] Name of format to use. If not specified, then date is returned unchanged. The string may begin with "utc-", then the output will be formated with utc timezone.
+   */
+  function formatDateHelper(date, format) {
+    date = Handlebars.escapeExpression(date);
+    if (format === undefined) {
+      return date;
+    }
+
+    let parsedDate = luxon.DateTime.fromISO(date);
+
+    if (format.startsWith("utc-")) {
+      format = format.slice(4);
+      parsedDate = parsedDate.toUTC();
+    }
+
+    switch (format) {
+      case "iso":
+        return parsedDate.toISO();
+      case "iso-date":
+        return parsedDate.toISODate();
+      case "iso-time":
+        return parsedDate.toISOTime();
+      case "rfc":
+        return parsedDate.toFormat("yyyy-MM-dd HH:mm:ssZZ");
+      case "rok":
+        return parsedDate.toFormat("yyyy");
+      case "apa":
+        return parsedDate.toFormat("yyyy, MMMM d");
+      case "human":
+        return parsedDate.toLocaleString(luxon.DateTime.DATE_FULL);
+      default:
+        console.error(
+          `formatDateHelper recieved invalid format argument: ${format}`
+        );
+        return date; // Return date so user sees something.
     }
   }
 

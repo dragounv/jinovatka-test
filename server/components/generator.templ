@@ -5,7 +5,7 @@ templ generatorView() {
 	<div class="flex-content-column citation">
 		<section>
 			<h2>Citace:</h2>
-			<p id="citation">hello</p>
+			<p id="citation"></p>
 		</section>
 	</div>
 	<div class="flex-content-column">
@@ -15,7 +15,6 @@ templ generatorView() {
 				<div class="flex-row field-chooser">
 					<button type="button" id="add-field">Přidat&nbsp;pole</button>
 					<select id="field-type">
-						<option value="text">Text</option>
 						<option value="autoři">Autoři</option>
 						// <option value="příjmení">Příjmení</option>
 						// <option value="jméno">Jméno</option>
@@ -27,6 +26,7 @@ templ generatorView() {
 						<option value="archivní-url">Archivní URL</option>
 						<option value="datum-archivace">Datum archivace</option>
 						<option value="datum-citace">Datum citace</option>
+						<option value="text">Text</option>
 					</select>
 				</div>
 				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
@@ -93,11 +93,20 @@ templ generatorView() {
 						<input type="text" id="název" data-citationfield="název">
 						<input type="text" id="součást" data-citationfield="součást">
 						<input type="text" id="místo-vydání" data-citationfield="místo-vydání">
-						<input type="text" id="datum-vydání" data-citationfield="datum-vydání">
+						<span class="flex-row max-flex">
+							<input type="text" placeholder="Vyberte nebo vyplňte hodnotu" id="datum-vydání" data-citationfield="datum-vydání">
+							<input type="datetime-local" step="1" id="datum-vydání-datetime">
+						</span>
 						<input type="text" id="url" data-citationfield="url">
 						<input type="text" id="archivní-url" data-citationfield="archivní-url">
-						<input type="text" id="datum-archivace" data-citationfield="datum-archivace">
-						<input type="text" id="datum-citace" data-citationfield="datum-citace">
+						<span class="flex-row max-flex">
+							<input type="text" placeholder="Vyberte nebo vyplňte hodnotu" id="datum-archivace" data-citationfield="datum-archivace">
+							<input type="datetime-local" step="1" id="datum-archivace-datetime">
+						</span>
+						<span class="flex-row max-flex">
+							<input type="text" placeholder="Vyberte nebo vyplňte hodnotu" id="datum-citace" data-citationfield="datum-citace">
+							<input type="datetime-local" step="1" id="datum-citace-datetime">
+						</span>
 						<script>
 							const input = document.getElementById("datum-citace");
 							input.value = (new Date).toLocaleDateString("en-CA");
@@ -141,5 +150,6 @@ templ generatorView() {
 	]
 	</script>
 	<script src="/static/handlebars.min-v4.7.8.js"></script>
+	<script src="/static/luxon.min.js"></script>
 	<script src="/static/generator.js"></script>
 }
