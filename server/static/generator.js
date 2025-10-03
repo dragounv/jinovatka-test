@@ -429,8 +429,8 @@
             <option value="iso-date">Datum (RRRR-MM-DD)</option>
             <option value="rok">Rok</option>
             <option value="human">Datum dlouhé</option>
-            <option value="iso">Datum dlouhé (ISO 8601)</option>
-            <option value="rfc">Datum dlouhé (RFC 3339)</option>
+            <option value="iso">Datum a čas (ISO 8601)</option>
+            <option value="rfc">Datum a čas (ISO 8601 s mezerou)</option>
             <option value="apa">APA (RRRR, měsíc DD)</option>
             <option value="bez-formatu">Neměnit formát</option>
           </select>
