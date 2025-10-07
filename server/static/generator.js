@@ -208,62 +208,77 @@
       <div class="flex-column max-flex f-middle authors-field">
         <span class="flex-row case-controls">
           <b>Písmo jména (první autor):</b>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="vychozi">Výchozí</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="male">Malé</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="velke">Velké</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno-prvni" value="prvnivelke" checked>První&nbsp;velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno-prvni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno-prvni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno-prvni" value="velke">Velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno-prvni" value="prvnivelke" checked>První&nbsp;velké</label>
         </span>
         <span class="flex-row case-controls">
           <b>Písmo příjmení (první autor):</b>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="vychozi">Výchozí</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="male">Malé</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="velke" checked>Velké</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni-prvni" value="prvnivelke">První&nbsp;velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni-prvni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni-prvni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni-prvni" value="velke" checked>Velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni-prvni" value="prvnivelke">První&nbsp;velké</label>
         </span>
         <span class="flex-row case-controls">
           <b>Na prvním místě (první autor):</b>
-          <label class="flex-row"><input type="radio" name="f-poradi-prvni" value="prijmeni" checked>Příjmení</label>
-          <label class="flex-row"><input type="radio" name="f-poradi-prvni" value="jmeno">Jméno</label>
+          <label class="flex-row"><input type="radio" name="a-poradi-prvni" value="prijmeni" checked>Příjmení</label>
+          <label class="flex-row"><input type="radio" name="a-poradi-prvni" value="jmeno">Jméno</label>
         </span>
-        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (první autor):</b><input class="max-flex" type="text" value="," name="f-intjmeno-prvni"></label>
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (první autor):</b><input class="max-flex" type="text" value="," name="a-intjmeno-prvni"></label>
         <hr class="max-flex">
         <span class="flex-row case-controls">
           <b>Písmo jména:</b>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="vychozi">Výchozí</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="male">Malé</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="velke">Velké</label>
-          <label class="flex-row"><input type="radio" name="f-formatjmeno" value="prvnivelke" checked>První&nbsp;velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno" value="velke">Velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatjmeno" value="prvnivelke" checked>První&nbsp;velké</label>
         </span>
         <span class="flex-row case-controls">
           <b>Písmo příjmení:</b>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="vychozi">Výchozí</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="male">Malé</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="velke" checked>Velké</label>
-          <label class="flex-row"><input type="radio" name="f-formatprijmeni" value="prvnivelke">První&nbsp;velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni" value="vychozi">Výchozí</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni" value="male">Malé</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni" value="velke" checked>Velké</label>
+          <label class="flex-row"><input type="radio" name="a-formatprijmeni" value="prvnivelke">První&nbsp;velké</label>
         </span>
         <span class="flex-row case-controls">
           <b>Na prvním místě (ostatní):</b>
-          <label class="flex-row"><input type="radio" name="f-poradi" value="prijmeni" checked>Příjmení</label>
-          <label class="flex-row"><input type="radio" name="f-poradi" value="jmeno">Jméno</label>
+          <label class="flex-row"><input type="radio" name="a-poradi" value="prijmeni" checked>Příjmení</label>
+          <label class="flex-row"><input type="radio" name="a-poradi" value="jmeno">Jméno</label>
         </span>
-        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (ostatní):</b><input class="max-flex" type="text" value="," name="f-intjmeno"></label>
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;jmény (ostatní):</b><input class="max-flex" type="text" value="," name="a-intjmeno"></label>
         <hr class="max-flex">
-        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;autory:</b><input class="max-flex" type="text" value=";" name="f-intautor"></label>
+        <label class="flex-row"><b>Interpunkce&nbsp;mezi&nbsp;autory:</b><input class="max-flex" type="text" value=";" name="a-intautor"></label>
         <span class="flex-row case-controls">
           <b>Spojka před posledním autorem:</b>
-          <label class="flex-row"><input type="radio" name="f-a" value="a" checked>a</label>
-          <label class="flex-row"><input type="radio" name="f-a" value="&amp;">&amp;</label>
-          <label class="flex-row"><input type="radio" name="f-a" value="and">and</label>
+          <label class="flex-row"><input type="radio" name="a-a" value="a" checked>a</label>
+          <label class="flex-row"><input type="radio" name="a-a" value="&amp;">&amp;</label>
+          <label class="flex-row"><input type="radio" name="a-a" value="and">and</label>
         </span>
         <span class="flex-row case-controls">
           <b>Použít spojku vždy když je více než jeden autor:</b>
-          <label class="flex-row"><input type="radio" name="f-vzdya" value="" checked>Ne</label>
-          <label class="flex-row"><input type="radio" name="f-vzdya" value="1">Ano</label>
+          <label class="flex-row"><input type="radio" name="a-vzdya" value="" checked>Ne</label>
+          <label class="flex-row"><input type="radio" name="a-vzdya" value="1">Ano</label>
         </span>
-        <label class="flex-row"><b>Maximalní&nbsp;počet&nbsp;autorů:</b><input class="max-flex" type="number" min="1" step="1" value="5" name="f-max"></label>
-        <label class="flex-row"><b>Přípona (a další):</b><input class="max-flex" type="text" value="et al." name="f-etal"></label>
+        <label class="flex-row"><b>Maximalní&nbsp;počet&nbsp;autorů:</b><input class="max-flex" type="number" min="1" step="1" value="5" name="a-max"></label>
+        <label class="flex-row"><b>Přípona (a další):</b><input class="max-flex" type="text" value="et al." name="a-etal"></label>
+        <hr class="max-flex">
+        <div class="flex-row max-flex">
+          ${fieldSeparatorFormControls}
+          ${addSpaceFormControls}
+        </dev>
       </div>
     `;
+
+    // Stop text input fields from being dragable
+    stopElementFromBeingDragged(field.elements.namedItem("f-oddělovač"), field);
+    stopElementFromBeingDragged(
+      field.elements.namedItem("a-intjmeno-prvni"),
+      field
+    );
+    stopElementFromBeingDragged(field.elements.namedItem("a-intjmeno"), field);
+    stopElementFromBeingDragged(field.elements.namedItem("a-intautor"), field);
+    stopElementFromBeingDragged(field.elements.namedItem("a-etal"), field);
 
     // Put the function necessary for rendering the part of template
     // represented by the field into global weakMap so it can be called
@@ -278,12 +293,15 @@
         if ("value" in input && "name" in input) {
           /** @type {string} */
           let key = input.name;
-          if (key.startsWith("f-")) {
-            key = key.slice(2); // Remove the "f-" prefix
+          if (key.startsWith("a-")) {
+            key = key.slice(2); // Remove the "a-" prefix
+          } else if (key.startsWith("f-")) {
+            // Formating control, ignore
+            continue;
           } else {
             // If you see this warning then check the HTML template above.
             console.warn(
-              "initAuthorsField found input with name without 'f-' prefix. Got:",
+              "initAuthorsField found input with name without 'a-' prefix. Got:",
               key
             );
             continue;
@@ -302,7 +320,10 @@
         }
       }
 
-      return "{{autoři " + args.join(" ") + "}}";
+      let expr = "{{autoři " + args.join(" ") + "}}";
+      expr = addSeparator(expr, field);
+      expr = addSpace(expr, field);
+      return expr;
     };
   }
 
@@ -400,6 +421,7 @@
         </div>
         <div class="flex-row">
           ${fieldSeparatorFormControls}
+          ${addSpaceFormControls}
         </div>
       </div>
     `;
@@ -411,6 +433,7 @@
       expr = wrapExprInFormat(expr, field);
       expr = `{{${expr}}}`;
       expr = addSeparator(expr, field);
+      expr = addSpace(expr, field);
       return expr;
     };
   }
@@ -436,6 +459,9 @@
           </select>
           <label class="flex-row"><input type="checkbox" name="f-utc">UTC</label>
         </div>
+        <div class="flex-row max-flex">
+          ${addSpaceFormControls}
+        </div>
       </div>
     `;
     //<option value="iso-time">ISO 8601 jen čas</option>
@@ -444,6 +470,7 @@
       let expr = exprName;
       expr = formatTime(field, expr);
       expr = `{{${expr}}}`;
+      expr = addSpace(expr, field);
       return expr;
     };
 
@@ -479,6 +506,7 @@
         <div class="flex-row max-flex">
           ${fieldFormatFormControls}
           ${fieldSeparatorFormControls}
+          ${addSpaceFormControls}
         </div>
       </div>
     `;
@@ -489,8 +517,28 @@
       expr = wrapExprInFormat(expr, field);
       expr = `{{${expr}}}`;
       expr = addSeparator(expr, field);
+      expr = addSpace(expr, field);
       return expr;
     };
+  }
+
+  const addSpaceFormControls = `<label class="flex-row"><input type="checkbox" name="f-add-space" checked>Přidat&nbsp;mezeru</label>`;
+  /**
+   * Will append space at the end of expr if f-add-space is checked.
+   * @param {string} expr
+   * @param {HTMLFormElement} field
+   * @return {string}
+   */
+  function addSpace(expr, field) {
+    const addSpaceInput = field.elements.namedItem("f-add-space");
+    if (
+      addSpaceInput !== null &&
+      "checked" in addSpaceInput &&
+      addSpaceInput.checked
+    ) {
+      return expr + " ";
+    }
+    return expr;
   }
 
   /**
@@ -510,7 +558,7 @@
     <label class="flex-row"><b>Interpunkce:</b><input type="text" name="f-oddělovač"></label>
   `;
   /**
-   * Will append separator at the end of expr. Use as last function in chain.
+   * Will append separator at the end of expr.
    * @param {string} expr
    * @param {HTMLFormElement} field
    * @return {string}
@@ -605,7 +653,7 @@
   }
 
   /**
-   *
+   * Create the template string from fields
    * @param {HTMLElement} templateBuilder
    * @param {HTMLElement} target
    */
@@ -616,7 +664,7 @@
       if (!data?.getTemplateValue) {
         continue;
       }
-      template += data.getTemplateValue() + " ";
+      template += data.getTemplateValue();
     }
     target.value = template;
   }

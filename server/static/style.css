@@ -350,7 +350,8 @@ tbody > tr:nth-of-type(odd) {
     padding-top: auto;
     padding-bottom: auto;
 }
-.field input {
+.field input,
+.field select {
     margin: 4px;
     background-color: var(--clr-background-main);
     border-color: var(--clr-black);
@@ -403,7 +404,8 @@ fieldset {
     border: 0;
 }
 
-.authors-field input[type="text"] {
+.authors-field input[type="text"],
+.authors-field input[type="number"] {
     width: 5rem;
 }
 .authors-field {
