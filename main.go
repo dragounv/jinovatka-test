@@ -9,6 +9,7 @@ import (
 	gormStorage "jinovatka/storage/gorm"
 	"jinovatka/utils"
 	"log/slog"
+	"net"
 	"os"
 	"os/signal"
 	"runtime"
@@ -23,15 +24,23 @@ import (
 func main() {
 	log := slog.New(slog.Default().Handler())
 
+	const defaultDBPath = "storage.db"
+	sqlitePath, ok := os.LookupEnv("DB_PATH")
+	if !ok {
+		log.Warn("the database path is not set, using default " + defaultDBPath)
+		sqlitePath = defaultDBPath
+	}
+
 	// Prepare db conection.
-	db, err := gorm.Open(sqlite.Open("storage.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(sqlitePath), &gorm.Config{})
 	if err != nil {
 		log.Error("could not open database connection", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	// Prepare queue client
-	client, err := valkey.NewClient(valkey.ClientOption{InitAddress: []string{"127.0.0.1:6379"}})
+	valkeyOptions := valkeyq.NewValkeyOptionsFromEnv()
+	client, err := valkey.NewClient(valkey.ClientOption{InitAddress: []string{net.JoinHostPort(valkeyOptions.Addr, valkeyOptions.Port)}})
 	if err != nil {
 		log.Error("failed to create valkey client", "error", err.Error())
 	}
@@ -53,17 +62,22 @@ func main() {
 
 	initiatedServices := services.NewServices(log, repository, queue)
 
-	const addr = "localhost:8080"
+	const defaultServerAdderss = "localhost:8080"
+	serverAddress, ok := os.LookupEnv("SERVER_ADDRESS")
+	if !ok {
+		log.Warn("the server adress is not set, using default " + defaultServerAdderss)
+		serverAddress = defaultServerAdderss
+	}
 	server := server.NewServer(
 		stopSignal,
 		log,
-		addr,
+		serverAddress,
 		initiatedServices,
 	)
 
 	// Start the server in new goroutine
 	go server.ListenAndServe()
-	log.Info("Server is listening at http://" + addr)
+	log.Info("Server is listening at http://" + serverAddress)
 
 	// Start listening for results from queue
 	initiatedServices.CaptureService.ListenForResults(stopSignal)

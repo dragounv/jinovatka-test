@@ -1,0 +1,34 @@
+networks:
+  queue-network: {}
+
+services:
+  jinovatka:
+    build:
+      context: ../..
+    ports:
+      - 8080:8080
+    volumes:
+      - ../../storage.db:/mnt/storage.db:rw
+    depends_on:
+      - valkey
+    networks:
+      queue-network: {}
+    environment:
+      - DB_PATH=/mnt/storage.db
+      - VALKEY_ADDR=queue
+      - VALKEY_PORT=6379
+      - SERVER_ADDRESS=0.0.0.0:8080
+
+  valkey:
+    image: valkey/valkey:8.0-alpine
+    command: >
+      valkey-server
+      --save 60 1
+    ports:
+      - 6379:6379
+    networks:
+      queue-network:
+        aliases:
+          - queue
+
+
