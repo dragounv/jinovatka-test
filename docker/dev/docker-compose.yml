@@ -6,7 +6,7 @@ services:
     build:
       context: ../..
     ports:
-      - 8080:8321
+      - 8321:8080
     volumes:
       - ../../storage.db:/mnt/storage.db:rw
     depends_on:
