@@ -24,8 +24,6 @@ services:
     command: >
       valkey-server
       --save 60 1
-    ports:
-      - 6379:6379
     networks:
       queue-network:
         aliases:
