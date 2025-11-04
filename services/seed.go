@@ -18,16 +18,18 @@ func NewSeedService(
 	ctx context.Context,
 	log *slog.Logger,
 	repository storage.SeedRepository,
+	isUniqueService *IsUniqueService,
 	maxInputListLineLength,
 	maxInputListLines int,
 ) *SeedService {
 	assert.Must(log != nil, "NewSeedService: log can't be nil")
 	assert.Must(repository != nil, "NewSeedService: repository can't be nil")
+	const maxAllowedIdRetries = 32 // If id collision occures, try again at most this times
 	return &SeedService{
 		Log:                    log,
 		Repository:             repository,
 		UrlParser:              new(UrlParserService),
-		IdGenerator:            NewIdGeneratorService(ctx),
+		IdGenerator:            NewIdGeneratorService(ctx, isUniqueService, maxAllowedIdRetries),
 		MaxInputListLineLength: maxInputListLineLength,
 		MaxInputListLines:      maxInputListLines,
 	}

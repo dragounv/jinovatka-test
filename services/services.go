@@ -19,7 +19,14 @@ const (
 func NewServices(ctx context.Context, log *slog.Logger, repository *storage.Repository, queue queue.Queue) *Services {
 	assert.Must(log != nil, "NewServices: log can't be nil")
 	assert.Must(repository != nil, "NewServices: repository can't be nil")
-	seedService := NewSeedService(ctx, log, repository.SeedRepository, MaxUrlAdressLength, MaxInputedUrlAddresses)
+	seedService := NewSeedService(
+		ctx,
+		log,
+		repository.SeedRepository,
+		NewIsUniqueService(repository.IdListRepository),
+		MaxUrlAdressLength,
+		MaxInputedUrlAddresses,
+	)
 	exporterService := NewExporterService()
 	captureService := NewCaptureService(log, queue, seedService)
 	return &Services{

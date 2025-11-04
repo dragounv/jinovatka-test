@@ -56,7 +56,8 @@ func main() {
 	utils.ShutdownFunc = stop // Setup function, that can be used in cases, where shutdown of the server is necessary.
 
 	seedRepository := gormStorage.NewSeedRepository(log, db)
-	repository := storage.NewRepository(seedRepository)
+	idListRepository := gormStorage.NewIdListRepository(db)
+	repository := storage.NewRepository(seedRepository, idListRepository)
 
 	queue := valkeyq.NewQueue(log, client)
 

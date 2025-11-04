@@ -5,22 +5,29 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
 )
 
+// Generates random base32 ids. Can be used from multiple goroutines.
 type IdGeneratorService struct {
+	Closed          bool
+	IsUniqueChecker IsUniqueChecker
+	MaxRetries      int
+
 	requests  chan IdRequest
 	closeOnce sync.Once
-	Closed    bool
 }
 
 // Creates new IdGeneratorService and starts backgroud goroutine.
 // Please call IdGeneratorService.Close to gracefuly stop.
-func NewIdGeneratorService(ctx context.Context) *IdGeneratorService {
+func NewIdGeneratorService(ctx context.Context, isUniqueChecker IsUniqueChecker, maxRetries int) *IdGeneratorService {
 	service := &IdGeneratorService{
-		requests: make(chan IdRequest),
+		requests:        make(chan IdRequest),
+		IsUniqueChecker: isUniqueChecker,
+		MaxRetries:      maxRetries,
 	}
 	go service.run(ctx)
 	return service
@@ -33,6 +40,35 @@ type IdRequest struct {
 // Generate and return a base32 encoded string that should be used as id for Seeds and Groups.
 // Can be called from multiple goroutines.
 func (service *IdGeneratorService) GetId() (string, error) {
+	maxRetries := service.MaxRetries
+	if maxRetries < 0 {
+		maxRetries = 0
+	}
+
+	for ; maxRetries >= 0; maxRetries-- {
+		id, err := service.getId()
+		if err != nil {
+			return "", err
+		}
+
+		isUnique, err := service.IsUniqueChecker.IsUnique(id)
+		if err != nil {
+			return "", fmt.Errorf("IdGeneratorService.GetId IsUniqueChecker returned error: %w", err)
+		}
+
+		if isUnique {
+			err := service.IsUniqueChecker.Add(id)
+			if err != nil {
+				return "", fmt.Errorf("IdGeneratorService.GetId IsUniqueChecker returned error: %w", err)
+			}
+			return id, nil
+		}
+	}
+
+	return "", errors.New("IdGeneratorService.GetId could not generate unique id and run out of retries")
+}
+
+func (service *IdGeneratorService) getId() (string, error) {
 	if service.Closed {
 		return "", errors.New("IdGeneratorService.GetId the service is closed")
 	}
@@ -77,7 +113,9 @@ func (service *IdGeneratorService) run(ctx context.Context) {
 			encoding.Encode(outputBuffer, randNumBuffer)
 
 			const desiredIdLength = 6 // If more than 7 chars is required then bigger random number is necessary
-			request.Reply <- string(outputBuffer[:desiredIdLength])
+			id := string(outputBuffer[:desiredIdLength])
+
+			request.Reply <- id
 		}
 	}
 }
@@ -88,4 +126,21 @@ func (service *IdGeneratorService) Close() {
 		close(service.requests)
 		service.Closed = true
 	})
+}
+
+type IsUniqueChecker interface {
+	// Return true if the id is unique, return false otherwise
+	IsUnique(id string) (bool, error)
+	Add(id string) error
+}
+
+// IsUniqueChecker that always returns true
+type AlwaysUnique struct{}
+
+func (*AlwaysUnique) IsUnique(id string) (bool, error) {
+	return true, nil
+}
+
+func (*AlwaysUnique) Add(id string) error {
+	return nil
 }
