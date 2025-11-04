@@ -293,6 +293,10 @@ tbody > tr:nth-of-type(odd) {
     margin-left: 8px;
 }
 
+.group-export-buttons > form {
+    margin-left: 1rem;
+}
+
 /* footer */
 .footer {
     margin: 16px 0;

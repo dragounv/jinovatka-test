@@ -31,26 +31,30 @@ templ seedView(data *SeedViewData) {
 		<tbody>
 			<tr>
 				<td>URL:</td>
-				<td>{data.Seed.URL}</td>
+				<td><a>{data.Seed.URL}</a></td>
 			</tr>
-			<tr>
-				<td>Veřejné semínko:</td>
-				if data.Seed.Public {
-					<td>Ano</td>
-				} else {
-					<td>Ne</td>
-				}
-			</tr>
+			// <tr>
+			// 	<td>Veřejné semínko:</td>
+			// 	if data.Seed.Public {
+			// 		<td>Ano</td>
+			// 	} else {
+			// 		<td>Ne</td>
+			// 	}
+			// </tr>
 			<tr>
 				<td>Stav:</td>
 				<td>{ prettyPrintCaptureState(data.Seed.State) }</td>
 				// TODO: Add other messages for cases where there was error during crawl.
 			</tr>
+			<tr>
+				<td>Zkrácená archivní URL:</td>
+				<td>{ "/archiv/" + data.Seed.ShadowID }</td>
+			</tr>
 			if data.Seed.State == entities.DoneSuccess {
 				
 			}
 				<tr>
-					<td>Archivní odkaz:</td>
+					<td>Archivní URL:</td>
 					if data.Seed.State == entities.DoneSuccess {
 						<td><a href={ data.Seed.ArchivalURL }>{ data.Seed.ArchivalURL }</a></td>
 						// TODO: This should be link. There should also be a copy button.

@@ -32,26 +32,28 @@ templ groupView(data *GroupViewData) {
 	</div>
 	<div class="flex-row">
 		<p>Exportovat do:</p>
-		<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
-			<button type="submit">CSV</button>
-		</form>
-		<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
-			<button type="submit">Excel</button>
-		</form>
+		<div class="flex-row group-export-buttons">
+			<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
+				<button type="submit">CSV</button>
+			</form>
+			<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
+				<button type="submit">Excel</button>
+			</form>
+		</div>
 	</div>
 	<table id="group-info-table">
 		<thead>
 			<tr>
 				<th>URL</th>
-				<th>ID</th>
+				<th>Zkrácená archivní URL</th>
 				<th>Stav</th>
 			</tr>
 		</thead>
 		<tbody>
 		for _, seed := range data.Group.Seeds {
 			<tr>
-				<td><a href={ seed.URL }>{ seed.URL }</a></td>
-				<td><a href={ "/seed/" + seed.ShadowID }>{ seed.ShadowID }</a></td>
+				<td><a href={ "/seed/" + seed.ShadowID }>{ seed.URL }</a></td>
+				<td><a href={ "/archiv/" + seed.ShadowID }></a>{ "/archiv/" + seed.ShadowID }</td>
 				<td>{ prettyPrintCaptureState(seed.State) }</td>
 			</tr>
 		}
