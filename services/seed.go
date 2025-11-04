@@ -1,7 +1,7 @@
 package services
 
 import (
-	"crypto/rand"
+	"context"
 	"errors"
 	"fmt"
 	"jinovatka/assert"
@@ -15,6 +15,7 @@ import (
 var ErrEmptyList = errors.New("list was empty")
 
 func NewSeedService(
+	ctx context.Context,
 	log *slog.Logger,
 	repository storage.SeedRepository,
 	maxInputListLineLength,
@@ -26,6 +27,7 @@ func NewSeedService(
 		Log:                    log,
 		Repository:             repository,
 		UrlParser:              new(UrlParserService),
+		IdGenerator:            NewIdGeneratorService(ctx),
 		MaxInputListLineLength: maxInputListLineLength,
 		MaxInputListLines:      maxInputListLines,
 	}
@@ -35,7 +37,8 @@ type SeedService struct {
 	Log        *slog.Logger
 	Repository storage.SeedRepository
 
-	UrlParser *UrlParserService
+	UrlParser   *UrlParserService
+	IdGenerator *IdGeneratorService
 
 	// Maximum length of seed URL adress
 	MaxInputListLineLength int
@@ -62,27 +65,6 @@ func (service *SeedService) FindSeeds(arguments *FindSeedsArgs) ([]*entities.See
 	return seeds, nil
 }
 
-// Save single seed to repository. This function is deprecated.
-// TODO: Get rid of this function. SaveList can hadle both signle and multiple seeds.
-func (service *SeedService) SaveSeed(seedURL string) error {
-	service.Log.Info("recieved seed", slog.String("url", seedURL))
-	shadow := rand.Text()
-
-	seed := &entities.Seed{
-		URL:      seedURL,
-		Public:   true,
-		State:    entities.NotEnqueued,
-		ShadowID: shadow,
-	}
-
-	err := service.Repository.Save([]*entities.Seed{seed})
-	if err != nil {
-		return fmt.Errorf("SeedService.SaveSeed failed to save seed to repository: %w", err)
-	}
-
-	return nil
-}
-
 // Takes string consisting of newline delimited list of URL adresses.
 // Checks input data size, parses them into slice of strings and delegates to SaveList.
 func (service *SeedService) Save(urlsList string, storeGroup bool) (*entities.SeedsGroup, error) {
@@ -102,7 +84,6 @@ func (service *SeedService) Save(urlsList string, storeGroup bool) (*entities.Se
 }
 
 // Save list of URL adresses as Seeds. Does format validation but does not check input data size.
-// For saving input from untrusted source use SeedService.Save instead.
 func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities.SeedsGroup, error) {
 	if len(lines) == 0 {
 		return nil, errors.New("SeedService.SaveList no input data")
@@ -113,12 +94,18 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 		if url == "" { // Skip empty lines
 			continue
 		}
+
 		url, err := service.UrlParser.ParseAndCleanURL(url, false)
 		if err != nil {
 			// TODO: Log this in some smart way.
 			return nil, fmt.Errorf("SeedService.SaveList failed to parse URL: %w", err)
 		}
-		shadow := rand.Text()
+
+		shadow, err := service.IdGenerator.GetId()
+		if err != nil {
+			return nil, fmt.Errorf("SeedService.SaveList failed to get new shadow id: %w", err)
+		}
+
 		seed := &entities.Seed{
 			URL:      url.String(),
 			Public:   true,
@@ -136,7 +123,10 @@ func (service *SeedService) SaveList(lines []string, storeGroup bool) (*entities
 	group := &entities.SeedsGroup{Seeds: seeds}
 	if storeGroup {
 		// Only create the shadow if we are gonna store the group.
-		group.ShadowID = rand.Text()
+		group.ShadowID, err = service.IdGenerator.GetId()
+		if err != nil {
+			return nil, fmt.Errorf("SeedService.SaveList failed to get new group.ShadowID: %w", err)
+		}
 		err = service.Repository.SaveGroup(group)
 	} else {
 		err = service.Repository.Save(seeds)

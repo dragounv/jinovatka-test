@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"jinovatka/assert"
 	"jinovatka/queue"
 	"jinovatka/storage"
@@ -15,10 +16,10 @@ const (
 	MaxInputedUrlAddresses = 20
 )
 
-func NewServices(log *slog.Logger, repository *storage.Repository, queue queue.Queue) *Services {
+func NewServices(ctx context.Context, log *slog.Logger, repository *storage.Repository, queue queue.Queue) *Services {
 	assert.Must(log != nil, "NewServices: log can't be nil")
 	assert.Must(repository != nil, "NewServices: repository can't be nil")
-	seedService := NewSeedService(log, repository.SeedRepository, MaxUrlAdressLength, MaxInputedUrlAddresses)
+	seedService := NewSeedService(ctx, log, repository.SeedRepository, MaxUrlAdressLength, MaxInputedUrlAddresses)
 	exporterService := NewExporterService()
 	captureService := NewCaptureService(log, queue, seedService)
 	return &Services{

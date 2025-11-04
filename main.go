@@ -60,7 +60,7 @@ func main() {
 
 	queue := valkeyq.NewQueue(log, client)
 
-	initiatedServices := services.NewServices(log, repository, queue)
+	initiatedServices := services.NewServices(stopSignal, log, repository, queue)
 
 	const defaultServerAdderss = "localhost:8080"
 	serverAddress, ok := os.LookupEnv("SERVER_ADDRESS")
