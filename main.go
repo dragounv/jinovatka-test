@@ -84,10 +84,12 @@ func main() {
 	if !ok {
 		if strings.HasPrefix(serverAddress, "http://") || strings.HasPrefix(serverAddress, "https://") {
 			serverHost = serverAddress
-		} else {
-			serverHost = "http://" + serverAddress
 		}
 		log.Warn("the SERVER_HOST is not set, using server adress " + serverHost)
+	}
+	if !strings.HasPrefix(serverHost, "http") {
+		serverHost = "http://" + serverHost
+		log.Warn("added http:// prefix to SERVER_HOST becouse it was missing")
 	}
 	components.SetComponentConstants(components.NewComponentConstants(
 		serverHost,
