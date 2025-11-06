@@ -18,6 +18,7 @@ services:
       - VALKEY_ADDR=queue
       - VALKEY_PORT=6379
       - SERVER_ADDRESS=0.0.0.0:8080
+      - SERVER_HOST=10.3.0.122:8321
 
   valkey:
     image: valkey/valkey:8.0-alpine
