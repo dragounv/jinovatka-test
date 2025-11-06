@@ -8,6 +8,7 @@ import (
 	"jinovatka/server/handlers/group"
 	"jinovatka/server/handlers/httperror"
 	"jinovatka/server/handlers/index"
+	"jinovatka/server/handlers/redirect"
 	"jinovatka/server/handlers/seed"
 	"jinovatka/server/handlers/static"
 	"jinovatka/services"
@@ -33,6 +34,7 @@ func NewServer(ctx context.Context, log *slog.Logger, addr string, services *ser
 		admin.NewAdminHandler(log),
 		seed.NewSeedHandler(log, services.SeedService, errorHandler),
 		generator.NewGeneratorHandler(log),
+		redirect.NewRedirectHanlder(log, services.SeedService, errorHandler),
 	)
 
 	server := &http.Server{
