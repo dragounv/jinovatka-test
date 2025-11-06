@@ -35,8 +35,8 @@ templ page(components *PageComponents) {
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>{components.Title}</title>
-	<link rel="stylesheet" href="/static/style.css">
+	<title>{ components.Title }</title>
+	<link rel="stylesheet" href={ fullStaticPath("style.css") }>
 </head>
 <body>
 	<header class="flex-content-column">
@@ -57,7 +57,7 @@ templ page(components *PageComponents) {
 
 templ header(heading string) {
 <div class="header">
-	<h1>{heading}</h1>
+	<h1>{ heading }</h1>
 </div>
 <hr class="no-bottom-margin">
 }
@@ -83,7 +83,7 @@ templ footer() {
 	</div>
 	<!-- NK logo -->
 	<a class="logo-nk" href="https://www.nkp.cz">
-		<img src="/static/logo_NK.svg" alt="Národní knihovna">
+		<img src={ fullStaticPath("logo_NK.svg") } alt="Národní knihovna">
 	</a>
 </div>
 }

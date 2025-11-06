@@ -8,6 +8,8 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "path"
+
 func indexHeader() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -58,7 +60,20 @@ func indexView() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex-content-column\"><!-- Vyhledávací / zadávací pole --><p>Krok 1. zadejte URL adresy</p><section><form action=\"/seeds/save/\" method=\"post\" enctype=\"multipart/form-data\"><div class=\"flex-row\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <button type=\"submit\">Odeslat</button></div><textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea></form></section><section class=\"error-output hidden\"><p>Tady se budou zobrazovat případné poblémy. Např. Utekli vám slepice!</p></section><script>\n\t\t\t// Workaround for multiline placeholder\n\t\t\tconst textarea = document.querySelector(\"textarea\");\n\t\t\ttextarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n\t\t</script></div><!-- Úvodní text --><!-- <section class=\"flex-content-column\">\n\tInformace o službě / projektu / použití\n\t</section> -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<div class=\"flex-content-column\"><!-- Vyhledávací / zadávací pole --><p>Krok 1. zadejte URL adresy</p><section><form action=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 templ.SafeURL
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinURLErrs(path.Join(Constants().GetGroupPath(), "/save") + "/")
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `server/components/index.templ`, Line: 18, Col: 70}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" method=\"post\" enctype=\"multipart/form-data\"><div class=\"flex-row\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <button type=\"submit\">Odeslat</button></div><textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea></form></section><script>\n\t\t\t// Workaround for multiline placeholder\n\t\t\tconst textarea = document.querySelector(\"textarea\");\n\t\t\ttextarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

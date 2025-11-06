@@ -31,7 +31,7 @@ templ seedView(data *SeedViewData) {
 		<tbody>
 			<tr>
 				<td>URL:</td>
-				<td><a>{data.Seed.URL}</a></td>
+				<td><a href={ data.Seed.URL }>{ data.Seed.URL }</a></td>
 			</tr>
 			// <tr>
 			// 	<td>Veřejné semínko:</td>
@@ -48,7 +48,7 @@ templ seedView(data *SeedViewData) {
 			</tr>
 			<tr>
 				<td>Zkrácená archivní URL:</td>
-				<td>{ "/archiv/" + data.Seed.ShadowID }</td>
+				<td><a href={ shortWaybackLink(data.Seed) }>{ shortWaybackLink(data.Seed) }</a></td>
 			</tr>
 			if data.Seed.State == entities.DoneSuccess {
 				

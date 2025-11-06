@@ -4,6 +4,7 @@ import (
 	"context"
 	valkeyq "jinovatka/queue/valkey"
 	"jinovatka/server"
+	"jinovatka/server/components"
 	"jinovatka/services"
 	"jinovatka/storage"
 	gormStorage "jinovatka/storage/gorm"
@@ -13,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 	"time"
 
@@ -66,7 +68,7 @@ func main() {
 	const defaultServerAdderss = "localhost:8080"
 	serverAddress, ok := os.LookupEnv("SERVER_ADDRESS")
 	if !ok {
-		log.Warn("the server adress is not set, using default " + defaultServerAdderss)
+		log.Warn("the SERVER_ADDRESS is not set, using default " + defaultServerAdderss)
 		serverAddress = defaultServerAdderss
 	}
 	server := server.NewServer(
@@ -75,6 +77,25 @@ func main() {
 		serverAddress,
 		initiatedServices,
 	)
+
+	// Prepare constants for templ components.
+	// This needs to be done before the server starts listening
+	serverHost, ok := os.LookupEnv("SERVER_HOST")
+	if !ok {
+		if strings.HasPrefix(serverAddress, "http://") || strings.HasPrefix(serverAddress, "https://") {
+			serverHost = serverAddress
+		} else {
+			serverHost = "http://" + serverAddress
+		}
+		log.Warn("the SERVER_HOST is not set, using server adress " + serverHost)
+	}
+	components.SetComponentConstants(components.NewComponentConstants(
+		serverHost,
+		"/static/",
+		"/seed/",
+		"/seeds/",
+		"/archiv/",
+	))
 
 	// Start the server in new goroutine
 	go server.ListenAndServe()

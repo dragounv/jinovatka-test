@@ -2,6 +2,7 @@ package components
 
 import (
 	"jinovatka/entities"
+	"path"
 )
 
 type GroupViewData struct {
@@ -27,16 +28,16 @@ templ groupView(data *GroupViewData) {
 <div class="flex-content-column">
 	<h2>Přehled stavu semínek</h2>
 	<div class="flex-row">
-		<p>Odkaz na přehled: <a href={ "/seeds/" + data.Group.ShadowID } id="group-link">{ data.Group.ShadowID }</a></p>
+		<p>Odkaz na přehled: <a href={ groupViewLink(data.Group) } id="group-link">{ data.Group.ShadowID }</a></p>
 		<button type="button" id="copy-group-link">Kopírovat odkaz</button>
 	</div>
 	<div class="flex-row">
 		<p>Exportovat do:</p>
 		<div class="flex-row group-export-buttons">
-			<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
+			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/", data.Group.ShadowID) }>
 				<button type="submit">CSV</button>
 			</form>
-			<form method="get" action={ "/seeds/export/" + data.Group.ShadowID }>
+			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/", data.Group.ShadowID) }>
 				<button type="submit">Excel</button>
 			</form>
 		</div>
@@ -52,8 +53,8 @@ templ groupView(data *GroupViewData) {
 		<tbody>
 		for _, seed := range data.Group.Seeds {
 			<tr>
-				<td><a href={ "/seed/" + seed.ShadowID }>{ seed.URL }</a></td>
-				<td><a href={ "/archiv/" + seed.ShadowID }></a>{ "/archiv/" + seed.ShadowID }</td>
+				<td><a href={ seedViewLink(seed) }>{ seed.URL }</a></td>
+				<td><a href={ shortWaybackLink(seed) }>{ shortWaybackLink(seed) }</a></td>
 				<td>{ prettyPrintCaptureState(seed.State) }</td>
 			</tr>
 		}
@@ -67,5 +68,5 @@ templ groupView(data *GroupViewData) {
 		</tfoot>
 	</table>
 </div>
-<script src="/static/group-main.js"></script>
+<script src={ fullStaticPath("group-main.js") }></script>
 }

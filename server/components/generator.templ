@@ -118,38 +118,9 @@ templ generatorView() {
 		</section>
 	</div>
 	<script type="application/json" id="input-data">
-	[
-		{
-			"autoři": [
-				{
-					"příjmení": "Dragoun",
-					"jméno": "Václav"
-				}
-			],
-			"název": "Nejlepší název na světě",
-			"místo-vydání": "Praha",
-			"datum-vydání": "29. Prosince 1909",
-			"url": "https://webarchiv.cz"
-		},
-		{
-			"autoři": [
-				{
-					"příjmení": "Dragoun",
-					"jméno": "Václav"
-				},
-				{
-					"příjmení": "Dreaming",
-					"jméno": "Duck"
-				}
-			],
-			"název": "Kachny jsou nejlepší",
-			"místo-vydání": "Rybník u Potoka",
-			"datum-vydání": "2025-12-29",
-			"url": "https://nkp.cz"
-		}
-	]
+	
 	</script>
-	<script src="/static/handlebars.min-v4.7.8.js"></script>
-	<script src="/static/luxon.min.js"></script>
-	<script src="/static/generator.js"></script>
+	<script src={ fullStaticPath("handlebars.min-v4.7.8.js") }></script>
+	<script src={ fullStaticPath("luxon.min.js") }></script>
+	<script src={ fullStaticPath("generator.js") }></script>
 }
