@@ -82,9 +82,7 @@ func main() {
 	// This needs to be done before the server starts listening
 	serverHost, ok := os.LookupEnv("SERVER_HOST")
 	if !ok {
-		if strings.HasPrefix(serverAddress, "http://") || strings.HasPrefix(serverAddress, "https://") {
-			serverHost = serverAddress
-		}
+		serverHost = serverAddress
 		log.Warn("the SERVER_HOST is not set, using server adress " + serverHost)
 	}
 	if !strings.HasPrefix(serverHost, "http") {
