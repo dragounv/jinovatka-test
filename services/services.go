@@ -16,7 +16,13 @@ const (
 	MaxInputedUrlAddresses = 20
 )
 
-func NewServices(ctx context.Context, log *slog.Logger, repository *storage.Repository, queue queue.Queue) *Services {
+type ServiceSettings struct {
+	ServerHost          string
+	SeedDetailPath      string
+	WaybackRedirectPath string
+}
+
+func NewServices(ctx context.Context, log *slog.Logger, repository *storage.Repository, queue queue.Queue, settings *ServiceSettings) *Services {
 	assert.Must(log != nil, "NewServices: log can't be nil")
 	assert.Must(repository != nil, "NewServices: repository can't be nil")
 	seedService := NewSeedService(
@@ -27,7 +33,7 @@ func NewServices(ctx context.Context, log *slog.Logger, repository *storage.Repo
 		MaxUrlAdressLength,
 		MaxInputedUrlAddresses,
 	)
-	exporterService := NewExporterService()
+	exporterService := NewExporterService(settings)
 	captureService := NewCaptureService(log, queue, seedService)
 	return &Services{
 		SeedService:     seedService,

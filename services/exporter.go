@@ -5,20 +5,29 @@ import (
 	"io"
 	"jinovatka/entities"
 	"net/url"
+	"path"
 
 	"github.com/xuri/excelize/v2"
 )
 
-type ExporterService struct{}
+type ExporterService struct {
+	ServerHost          string
+	SeedDetailPath      string
+	WaybackRedirectPath string
+}
 
-func NewExporterService() *ExporterService {
-	return &ExporterService{}
+func NewExporterService(settings *ServiceSettings) *ExporterService {
+	return &ExporterService{
+		ServerHost:          settings.ServerHost,
+		SeedDetailPath:      settings.SeedDetailPath,
+		WaybackRedirectPath: settings.WaybackRedirectPath,
+	}
 }
 
 // Convert SeedsGroup to nice excel sheet for users to keep track of their submited seeds.
 // The excel data will be written to the provided io.Writer.
-func (service ExporterService) GroupToExcel(group *entities.SeedsGroup, w io.Writer, seedUrlPrefix *url.URL) error {
-	header := []any{"URL", "Odkaz na detail", "Stav", "Odkaz do Webarchivu"}
+func (service ExporterService) GroupToExcel(group *entities.SeedsGroup, w io.Writer /*seedUrlPrefix *url.URL*/) error {
+	header := []any{"URL", "Zkrácený odkaz do Webarchivu", "Odkaz na detail", "Stav", "Odkaz do Webarchivu"}
 	const sheet = "Semínka"
 
 	f := excelize.NewFile()
@@ -37,20 +46,35 @@ func (service ExporterService) GroupToExcel(group *entities.SeedsGroup, w io.Wri
 
 	for i, seed := range group.Seeds {
 		rowIndex := i + 2 // This is excel, data starts at row 2 :)
-		fmt.Println("string:", seedUrlPrefix.String(), "host:", seedUrlPrefix.Host, "path:", seedUrlPrefix.Path)
-		detailLink := seedUrlPrefix.JoinPath("/" + seed.ShadowID)
-		fmt.Println("string:", detailLink.String(), "host:", detailLink.Host, "path:", detailLink.Path)
+
+		// fmt.Println("string:", seedUrlPrefix.String(), "host:", seedUrlPrefix.Host, "path:", seedUrlPrefix.Path)
+		// detailLink := seedUrlPrefix.JoinPath("/" + seed.ShadowID)
+
+		detailLink, err := url.JoinPath(service.ServerHost, path.Join(service.SeedDetailPath, seed.ShadowID))
+		if err != nil {
+			return fmt.Errorf("ExporterService.GroupToExcel could not create seed detail url: %w", err)
+		}
+
+		waybackShortLink, err := url.JoinPath(service.ServerHost, path.Join(service.WaybackRedirectPath, seed.ShadowID))
+		if err != nil {
+			return fmt.Errorf("ExporterService.GroupToExcel could not create wayback redirect url: %w", err)
+		}
+
+		// fmt.Println("string:", detailLink.String(), "host:", detailLink.Host, "path:", detailLink.Path)
 
 		state := "Nesklizeno"
 		if seed.State == entities.DoneSuccess {
 			state = "Sklizeno"
 		}
+
 		row := []any{
 			possibleLink{IsLink: true, Value: seed.URL, Link: seed.URL},                 // URL
-			possibleLink{IsLink: true, Value: seed.ShadowID, Link: detailLink.String()}, // Odkaz na detail
+			possibleLink{IsLink: true, Value: waybackShortLink, Link: waybackShortLink}, // Zkrácený odkaz do waybacku
+			possibleLink{IsLink: true, Value: seed.ShadowID, Link: detailLink},          // Odkaz na detail
 			possibleLink{IsLink: false, Value: state},                                   // Stav
 			possibleLink{IsLink: true, Value: seed.ArchivalURL, Link: seed.ArchivalURL}, // Odkaz do Webarchivu
 		}
+
 		err = service.writeExcelRow(f, sheet, rowIndex, row)
 		if err != nil {
 			return fmt.Errorf("ExporterService.GroupToExcel could not write row to sheet: %w", err)
@@ -101,3 +125,5 @@ func (service ExporterService) writeExcelRow(f *excelize.File, sheet string, row
 	}
 	return nil
 }
+
+// func (service *ExporterService) GroupToCsv()

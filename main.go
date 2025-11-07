@@ -47,36 +47,13 @@ func main() {
 		log.Error("failed to create valkey client", "error", err.Error())
 	}
 
-	// Catch SIGINT and SIGHUP. Prepare gentle shutdown.
-	// TODO: There are more signals that need catching
-	signals := []os.Signal{os.Interrupt}
-	if runtime.GOOS == "linux" {
-		signals = append(signals, syscall.SIGHUP)
-	}
-	stopSignal, stop := signal.NotifyContext(context.Background(), signals...)
-	defer stop()
-	utils.ShutdownFunc = stop // Setup function, that can be used in cases, where shutdown of the server is necessary.
-
-	seedRepository := gormStorage.NewSeedRepository(log, db)
-	idListRepository := gormStorage.NewIdListRepository(db)
-	repository := storage.NewRepository(seedRepository, idListRepository)
-
-	queue := valkeyq.NewQueue(log, client)
-
-	initiatedServices := services.NewServices(stopSignal, log, repository, queue)
-
+	// Get server address
 	const defaultServerAdderss = "localhost:8080"
 	serverAddress, ok := os.LookupEnv("SERVER_ADDRESS")
 	if !ok {
 		log.Warn("the SERVER_ADDRESS is not set, using default " + defaultServerAdderss)
 		serverAddress = defaultServerAdderss
 	}
-	server := server.NewServer(
-		stopSignal,
-		log,
-		serverAddress,
-		initiatedServices,
-	)
 
 	// Prepare constants for templ components.
 	// This needs to be done before the server starts listening
@@ -89,13 +66,51 @@ func main() {
 		serverHost = "http://" + serverHost
 		log.Warn("added http:// prefix to SERVER_HOST becouse it was missing")
 	}
+	const (
+		staticPathSegment          = "/static/"
+		seedDetailPathSegment      = "/seed/"
+		groupDetailPathSegment     = "/seeds/"
+		waybackRedirectPathSegment = "/archiv/"
+	)
 	components.SetComponentConstants(components.NewComponentConstants(
 		serverHost,
-		"/static/",
-		"/seed/",
-		"/seeds/",
-		"/archiv/",
+		staticPathSegment,
+		seedDetailPathSegment,
+		groupDetailPathSegment,
+		waybackRedirectPathSegment,
 	))
+
+	// Catch SIGINT and SIGHUP. Prepare gentle shutdown.
+	// TODO: There are more signals that need catching
+	signals := []os.Signal{os.Interrupt}
+	if runtime.GOOS == "linux" {
+		signals = append(signals, syscall.SIGHUP)
+	}
+	stopSignal, stop := signal.NotifyContext(context.Background(), signals...)
+	defer stop()
+	utils.ShutdownFunc = stop // Setup function, that can be used in cases, where shutdown of the server is necessary.
+
+	// Prepare repository
+	seedRepository := gormStorage.NewSeedRepository(log, db)
+	idListRepository := gormStorage.NewIdListRepository(db)
+	repository := storage.NewRepository(seedRepository, idListRepository)
+
+	// Prepare services
+	queue := valkeyq.NewQueue(log, client)
+	serviceSettings := &services.ServiceSettings{
+		ServerHost:          serverHost,
+		SeedDetailPath:      seedDetailPathSegment,
+		WaybackRedirectPath: waybackRedirectPathSegment,
+	}
+	initiatedServices := services.NewServices(stopSignal, log, repository, queue, serviceSettings)
+
+	// Prepare server
+	server := server.NewServer(
+		stopSignal,
+		log,
+		serverAddress,
+		initiatedServices,
+	)
 
 	// Start the server in new goroutine
 	go server.ListenAndServe()
