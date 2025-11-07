@@ -93,7 +93,7 @@ function printScoopSettings(settings) {
 async function run(captureSettings, config) {
   // Initialize valkey client
   // TODO: Pass config to Valkey
-  const valkey = new Valkey();
+  const valkey = new Valkey(config.valkeyUrl);
 
   // Run forever and handle requests
   while (true) {
@@ -131,17 +131,19 @@ async function run(captureSettings, config) {
     // If there was error during capture then skip writing and extraction
     if (wacz !== undefined) {
       // Write step
-      const waczPath = path.join(
-        config.outputDir,
-        request.seedShadowID + ".wacz"
-      );
-      try {
-        await fs.writeFile(waczPath, Buffer.from(wacz));
-      } catch (err) {
-        const errorMsg = `failed to write file ${waczPath}, got error: ${err.message}`;
-        console.error(errorMsg);
-        console.log(request);
-        result.errorMessages.push(errorMsg);
+      if (!config.discardArchiveFiles) {
+        const waczPath = path.join(
+          config.outputDir,
+          request.seedShadowID + ".wacz"
+        );
+        try {
+          await fs.writeFile(waczPath, Buffer.from(wacz));
+        } catch (err) {
+          const errorMsg = `failed to write file ${waczPath}, got error: ${err.message}`;
+          console.error(errorMsg);
+          console.log(request);
+          result.errorMessages.push(errorMsg);
+        }
       }
 
       // Extract step
@@ -314,7 +316,8 @@ async function enqueueResult(valkey, result) {
 
 /**
  * @typedef { object } WorkerConfig
- * @property { string } outputDir Path to directory where WACZ files will be stored be scoop
+ * @property { boolean } discardArchiveFiles If true, then the worker won't save the archive files (intendet for testing, set to false for production use)
+ * @property { string } outputDir Path to directory where WACZ files will be stored by scoop
  * @property { string } valkeyUrl Adress and port of the valkey database used for request queue
  * @property { object | undefined } captureSettings Overrides for default CaptureOptions used in scoop capture
  */

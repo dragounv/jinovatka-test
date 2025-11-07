@@ -20,6 +20,18 @@ services:
       - SERVER_ADDRESS=0.0.0.0:8080
       - SERVER_HOST=10.3.0.122:8321
 
+  scoop-worker:
+    build:
+      context: ../../workers/scoop-worker
+    volumes:
+      - ./worker-config.json:/app/config.json:ro
+      # Path to archive directory goes here if you wish to save the files
+    networks:
+      queue-network: {}
+    depends_on:
+      - valkey
+    restart: on-failure:5
+
   valkey:
     image: valkey/valkey:8.0-alpine
     command: >
@@ -29,5 +41,3 @@ services:
       queue-network:
         aliases:
           - queue
-
-
