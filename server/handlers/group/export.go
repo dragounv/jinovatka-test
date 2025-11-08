@@ -3,6 +3,7 @@ package group
 import (
 	"bytes"
 	"jinovatka/assert"
+	"jinovatka/entities"
 	"jinovatka/server/handlers/httperror"
 	"jinovatka/services"
 	"jinovatka/utils"
@@ -53,8 +54,22 @@ func (handler *ExportGroupHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	format := r.PathValue("format")
+	switch format {
+	case "excel":
+		handler.RespondExcel(w, r, group)
+	case "csv":
+		handler.RespondCsv(w, r, group)
+	default:
+		handler.Log.Warn("ExportGroupHandler.ServeHTTP user requested unknown format", utils.LogRequestInfo(r))
+		handler.ErrorHandler.PageNotFound(w, r)
+		return
+	}
+}
+
+func (handler *ExportGroupHandler) RespondExcel(w http.ResponseWriter, r *http.Request, group *entities.SeedsGroup) {
 	buffer := new(bytes.Buffer)
-	err = handler.ExporterService.GroupToExcel(group, buffer)
+	err := handler.ExporterService.GroupToExcel(group, buffer)
 	if err != nil {
 		handler.Log.Error("ExportGroupHandler.ServeHTTP got error from exporter service", "error", err.Error(), utils.LogRequestInfo(r))
 		handler.ErrorHandler.InternalServerError(w, r)
@@ -65,6 +80,25 @@ func (handler *ExportGroupHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 	const XlsxMimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	header.Set(utils.ContentType, XlsxMimetype)
 	filename := "export-" + group.ShadowID + ".xlsx"
+	header.Set("Content-Disposition", `attachment; filename="`+filename+`"`)
+	w.WriteHeader(http.StatusOK)
+	_, _ = buffer.WriteTo(w)
+	handler.Log.Info("ExportGroupHandler.ServeHTTP sucessfully responded", utils.LogRequestInfo(r))
+}
+
+func (handler *ExportGroupHandler) RespondCsv(w http.ResponseWriter, r *http.Request, group *entities.SeedsGroup) {
+	buffer := new(bytes.Buffer)
+	err := handler.ExporterService.GroupToCsv(group, buffer)
+	if err != nil {
+		handler.Log.Error("ExportGroupHandler.ServeHTTP got error from exporter service", "error", err.Error(), utils.LogRequestInfo(r))
+		handler.ErrorHandler.InternalServerError(w, r)
+		return
+	}
+
+	header := w.Header()
+	const CsvMimetype = "text/csv"
+	header.Set(utils.ContentType, CsvMimetype)
+	filename := "export-" + group.ShadowID + ".csv"
 	header.Set("Content-Disposition", `attachment; filename="`+filename+`"`)
 	w.WriteHeader(http.StatusOK)
 	_, _ = buffer.WriteTo(w)

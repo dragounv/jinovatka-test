@@ -75,5 +75,5 @@ func (handler *GroupHandler) View(w http.ResponseWriter, r *http.Request, data *
 func (handler *GroupHandler) Routes(mux *http.ServeMux) {
 	mux.Handle("GET /seeds/{id}", handler)
 	mux.Handle("POST /seeds/save/", handler.SaveGroupHandler)
-	mux.Handle("GET /seeds/export/{id}", handler.ExportGroupHandler)
+	mux.Handle("GET /seeds/export/{format}/{id}", handler.ExportGroupHandler)
 }

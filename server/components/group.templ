@@ -34,10 +34,10 @@ templ groupView(data *GroupViewData) {
 	<div class="flex-row">
 		<p>Exportovat do:</p>
 		<div class="flex-row group-export-buttons">
-			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/", data.Group.ShadowID) }>
+			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/csv/", data.Group.ShadowID) }>
 				<button type="submit">CSV</button>
 			</form>
-			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/", data.Group.ShadowID) }>
+			<form method="get" action={ path.Join(Constants().GetGroupPath(), "/export/excel/", data.Group.ShadowID) }>
 				<button type="submit">Excel</button>
 			</form>
 		</div>

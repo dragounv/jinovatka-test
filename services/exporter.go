@@ -1,6 +1,7 @@
 package services
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"jinovatka/entities"
@@ -28,7 +29,7 @@ func NewExporterService(settings *ServiceSettings) *ExporterService {
 // The excel data will be written to the provided io.Writer.
 func (service ExporterService) GroupToExcel(group *entities.SeedsGroup, w io.Writer /*seedUrlPrefix *url.URL*/) error {
 	header := []any{"URL", "Zkrácený odkaz do Webarchivu", "Odkaz na detail", "Stav", "Odkaz do Webarchivu"}
-	const sheet = "Semínka"
+	const sheet = "Export"
 
 	f := excelize.NewFile()
 	defer f.Close()
@@ -126,4 +127,45 @@ func (service ExporterService) writeExcelRow(f *excelize.File, sheet string, row
 	return nil
 }
 
-// func (service *ExporterService) GroupToCsv()
+func (service *ExporterService) GroupToCsv(group *entities.SeedsGroup, writer io.Writer) error {
+	header := []string{"URL", "Zkrácený odkaz do Webarchivu", "Odkaz na detail", "Stav", "Odkaz do Webarchivu"}
+
+	csvWriter := csv.NewWriter(writer)
+
+	err := csvWriter.Write(header)
+	if err != nil {
+		return fmt.Errorf("ExporterService.GroupToCsv could not write header: %w", err)
+	}
+
+	for _, seed := range group.Seeds {
+		detailLink, err := url.JoinPath(service.ServerHost, path.Join(service.SeedDetailPath, seed.ShadowID))
+		if err != nil {
+			return fmt.Errorf("ExporterService.GroupToCsv could not create seed detail url: %w", err)
+		}
+
+		waybackShortLink, err := url.JoinPath(service.ServerHost, path.Join(service.WaybackRedirectPath, seed.ShadowID))
+		if err != nil {
+			return fmt.Errorf("ExporterService.GroupToCsv could not create wayback redirect url: %w", err)
+		}
+
+		row := []string{
+			seed.URL,
+			waybackShortLink,
+			detailLink,
+			string(seed.State),
+			seed.ArchivalURL,
+		}
+
+		err = csvWriter.Write(row)
+		if err != nil {
+			return fmt.Errorf("ExporterService.GroupToCsv could not csv row: %w", err)
+		}
+	}
+
+	csvWriter.Flush()
+	if csvWriter.Error() != nil {
+		return fmt.Errorf("ExporterService.GroupToCsv flush returned error: %w", err)
+	}
+
+	return nil
+}
