@@ -40,7 +40,7 @@ function copyColumn(e) {
 // Copy url of single anchor.
 function copyFrom(target) {
   function handler(e) {
-    const data = new URL(target.href, window.location.href.origin).toString();
+    const data = target.href;
     const result = navigator.clipboard.writeText(data);
     result.catch((reason) => console.error(reason));
     result.then(() => showCopied(this));
