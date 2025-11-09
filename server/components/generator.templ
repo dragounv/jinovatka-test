@@ -9,50 +9,18 @@ templ generatorView() {
 		</section>
 	</div>
 	<div class="flex-content-column">
-		<span class="inline-step"><i>a. Sestavte šablonu nebo vyberte z připravených možností</i></span>
-		<section>
-			<form id="builder-controls" class="flex-row">
-				<div class="flex-row field-chooser">
-					<select id="field-type">
-						<option value="autoři">Autoři</option>
-						// <option value="příjmení">Příjmení</option>
-						// <option value="jméno">Jméno</option>
-						<option value="název">Název webu</option>
-						<option value="součást">Součást</option>
-						<option value="místo-vydání">Místo vydání</option>
-						<option value="datum-vydání">Datum vydání</option>
-						<option value="url">URL</option>
-						<option value="archivní-url">Archivní URL</option>
-						<option value="datum-archivace">Datum archivace</option>
-						<option value="datum-citace">Datum citace</option>
-						<option value="text">Text</option>
-					</select>
-					<button type="button" id="add-field">Přidat&nbsp;pole</button>
-				</div>
-				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
-			</form>
-		</section>
-		<section id="builder">
-			<i id="builder-placeholder">Tady budou vidět přidaná pole</i>
-		</section>
-		<span class="inline-step"><i>b. Vygenerujte šablonu a použijte pro aktuální citaci</i></span>
-		<button type="button" id="build-template" form="builder-controls">Použít&nbsp;šablonu</button>
-		<hr>
+		<span class="inline-step"><i>A. Doplňte data a zobrazí se vám citace podle předpřipravené šablony</i></span>
 		<section>
 			<form id="generator">
-				<span class="inline-step"><i>c. Doplňte metadata potřebná pro citaci</i></span>
 				<!-- Controls -->
 				<div class="flex-row hidden" id="form-controls" hidden>
 					<button type="button" id="prev">Předchozí</button>
 					<p><span id="cit-data-num"></span> z <span id="cit-data-count"></span></p>
 					<button type="button" id="next">Další</button>
 				</div>
-				<!-- Template -->
-				<div class="flex-row">
-					<label for="template">Šablona:</label>
-					<input type="text" id="template" value="{{autoři}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
-				</div>
+				
 
+				<hr>
 				<div class="flex-row">
 					<button type="button" id="add-author">Přidat autora</button>
 					<button type="button" id="remove-author">Odebrat autora</button>
@@ -114,9 +82,48 @@ templ generatorView() {
 						</script>
 					</div>
 				</div>
+
+				<!-- Template -->
+				<div class="flex-row">
+					<label for="template">Šablona:</label>
+					<input type="text" id="template" value="{{autoři}}. {{kurzíva název}} Online {{místo-vydání}} [{{datum-vydání}}]. Dostupné z: {{url}}. [cit. {{datum-citace}}]">
+				</div>
+			</form>
+			<hr>
+		</section>
+
+		<section>
+			<span class="inline-step"><i>B. Upravte si šablonu podle potřeby. Upravte existující pole, nebo přidejte nová. Šablonu použijete tlačítkem níže.</i></span>
+			<form id="builder-controls" class="flex-row">
+				<div class="flex-row field-chooser">
+					<select id="field-type">
+						<option value="autoři">Autoři</option>
+						// <option value="příjmení">Příjmení</option>
+						// <option value="jméno">Jméno</option>
+						<option value="název">Název webu</option>
+						<option value="součást">Součást</option>
+						<option value="místo-vydání">Místo vydání</option>
+						<option value="datum-vydání">Datum vydání</option>
+						<option value="url">URL</option>
+						<option value="archivní-url">Archivní URL</option>
+						<option value="datum-archivace">Datum archivace</option>
+						<option value="datum-citace">Datum citace</option>
+						<option value="text">Text</option>
+					</select>
+					<button type="button" id="add-field">Přidat&nbsp;pole</button>
+				</div>
+				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
 			</form>
 		</section>
+		<section id="builder">
+			<i id="builder-placeholder">Tady budou vidět přidaná pole</i>
+		</section>
+		// <span class="inline-step"><i>C. Vygenerujte šablonu a použijte pro aktuální citaci</i></span>
+		<button type="button" id="build-template" form="builder-controls">Použít&nbsp;šablonu</button>
+		// <hr>
+		
 	</div>
+
 	<script type="application/json" id="input-data">
 		[{
 			"autoři": [
