@@ -16,15 +16,11 @@ templ indexView() {
 		<p>Krok 1. zadejte URL adresy</p>
 		<section>
 			<form action={ path.Join(Constants().GetGroupPath(), "/save") + "/" } method="post" enctype="multipart/form-data">
-			<div class="flex-row">
 				<label for="url-list">zadejte jednu nebo více URL adres</label>
+				<textarea name="url-list" id="url-list" placeholder="https://example.com" required wrap="off" ></textarea>
 				<button type="submit">Odeslat</button>
-			</div>
-			<textarea name="url-list" id="url-list" placeholder="https://example.com" required wrap="off" ></textarea>
 			</form>
 		</section>
-		// <section class="error-output hidden">
-		// </section>
 		<script>
 			// Workaround for multiline placeholder
 			const textarea = document.querySelector("textarea");

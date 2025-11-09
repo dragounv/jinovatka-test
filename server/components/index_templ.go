@@ -73,7 +73,7 @@ func indexView() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" method=\"post\" enctype=\"multipart/form-data\"><div class=\"flex-row\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <button type=\"submit\">Odeslat</button></div><textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea></form></section><script>\n\t\t\t// Workaround for multiline placeholder\n\t\t\tconst textarea = document.querySelector(\"textarea\");\n\t\t\ttextarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n\t\t</script></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" method=\"post\" enctype=\"multipart/form-data\"><label for=\"url-list\">zadejte jednu nebo více URL adres</label> <textarea name=\"url-list\" id=\"url-list\" placeholder=\"https://example.com\" required wrap=\"off\"></textarea> <button type=\"submit\">Odeslat</button></form></section><script>\n\t\t\t// Workaround for multiline placeholder\n\t\t\tconst textarea = document.querySelector(\"textarea\");\n\t\t\ttextarea.setAttribute(\"placeholder\", \"https://example.com\\nhttps://another.example.com\");\n\t\t</script></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
