@@ -13,7 +13,6 @@ templ generatorView() {
 		<section>
 			<form id="builder-controls" class="flex-row">
 				<div class="flex-row field-chooser">
-					<button type="button" id="add-field">Přidat&nbsp;pole</button>
 					<select id="field-type">
 						<option value="autoři">Autoři</option>
 						// <option value="příjmení">Příjmení</option>
@@ -28,6 +27,7 @@ templ generatorView() {
 						<option value="datum-citace">Datum citace</option>
 						<option value="text">Text</option>
 					</select>
+					<button type="button" id="add-field">Přidat&nbsp;pole</button>
 				</div>
 				<button type="button" id="remove-all-fields">Odebrat všechna pole</button>
 			</form>
@@ -118,7 +118,14 @@ templ generatorView() {
 		</section>
 	</div>
 	<script type="application/json" id="input-data">
-	
+		[{
+			"autoři": [
+				{
+					"příjmení": "",
+					"jméno": ""
+				}
+			]
+		}]
 	</script>
 	<script src={ fullStaticPath("handlebars.min-v4.7.8.js") }></script>
 	<script src={ fullStaticPath("luxon.min.js") }></script>

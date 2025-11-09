@@ -710,16 +710,20 @@
         if (!Array.isArray(inputData)) {
           throw new Error("inputData must be array of objects");
         }
-        if (inputData.length !== 0) {
-          fillForm(generatorForm, authorsDiv, inputData[0]);
-          enableFormControls(
-            generatorForm,
-            authorsDiv,
-            templateElement,
-            citationOutput,
-            inputData
+        if (inputData.length <= 0) {
+          throw new Error(
+            "There should be present at least one object in input data even if empty. For proper rendering of the form it should contain an authors field."
           );
         }
+
+        fillForm(generatorForm, authorsDiv, inputData[0]);
+        enableFormControls(
+          generatorForm,
+          authorsDiv,
+          templateElement,
+          citationOutput,
+          inputData
+        );
       } catch (err) {
         console.error(err);
       }
