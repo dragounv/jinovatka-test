@@ -55,3 +55,17 @@ type CaptureMetadata struct {
 	// URL from CDXJ JSON block.
 	CapturedUrl string `json:"capturedUrl"`
 }
+
+func PrettyPrintCaptureState(state CaptureState) string {
+	switch state {
+	case NotEnqueued:
+		return "Nezařazeno"
+	case Pending:
+		return "Čeká na sklizení"
+	case DoneSuccess:
+		return "Úspěšně sklizeno"
+	case DoneFailure:
+		return "Chyba při sklizni"
+	}
+	return "Neznámý stav"
+}
